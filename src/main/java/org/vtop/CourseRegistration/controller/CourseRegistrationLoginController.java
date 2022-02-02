@@ -45,7 +45,7 @@ public class CourseRegistrationLoginController
 						HttpServletResponse response) throws ServletException, IOException, 
 						ParseException 
 	{	
-		int testStatus = 2; //Login with Password & Captcha-> 1: Enable/ 2: Disable
+		int testStatus = 1; //Login with Password & Captcha-> 1: Enable/ 2: Disable
 		int regSlotCheckStatus = 2; //If Permitted Schedule-> 1: Date & Time / 2: Only Date
 		int regTimeCheckStatus = 1; //Time-> 1: Open Hours/ 2: Permitted Schedule
 		int historyCallStatus = 1; //Student History-> 1: Procedure/ 2: Table
@@ -56,7 +56,7 @@ public class CourseRegistrationLoginController
 		int waitingListStatus = 2; //Waiting List Allow Status-> 1: Enable/ 2: Disable
 		int OptionNAStatus = 1; //Option Not Allowed Status-> 1: Enable/ 2: Disable
 		int compulsoryCourseStatus = 2; //Compulsory Course Allow Status-> 1: Enable/ 2: Disable
-		int otpStatus = 2; //OTP Send Status-> 1: Enable/ 2: Disable
+		int otpStatus = 1; //OTP Send Status-> 1: Enable/ 2: Disable
 		
 		int maxCredit = 27, minCredit = 16, studyStartYear = 0, studentSemester = 0;	
 		int studentGraduateYear = 0, academicYear = 0, academicGraduateYear = 0, cclTotalCredit = 0;				
@@ -77,8 +77,8 @@ public class CourseRegistrationLoginController
 		String currentDateTimeStr = "", returnVal = "", checkCourseSystem = "";
 				
 		SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy");		
-		Date startDate = format.parse("01-FEB-2022");
-		Date endDate = format.parse("04-FEB-2022");
+		Date startDate = format.parse("02-FEB-2022");
+		Date endDate = format.parse("06-FEB-2022");
 		String startTime = "10:00:00", endTime = "23:59:59", allowStartTime = "10:00:00";
 		
 		String[] statusMsg = new String[]{};
