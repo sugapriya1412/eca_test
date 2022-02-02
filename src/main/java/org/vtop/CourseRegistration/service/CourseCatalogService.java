@@ -1,6 +1,7 @@
 package org.vtop.CourseRegistration.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -343,6 +344,24 @@ public class CourseCatalogService
 											egbGroupId, programGroup, semesterSubId, classGroupId, classType, 
 											courseCode, programGroupCode, programSpecCode, costCentreCode);
 						}
+					}
+					break;
+					
+				case "CECA":
+					switch(searchType)
+					{
+						case 1:
+							tempList = courseCatalogRepository.findByGenericCourseTypeClassOptionAndCourseCode(
+											campusCode, courseSystem, egbGroupId, programGroup, semesterSubId, 
+											classGroupId, classType, programGroupCode, programSpecCode, 
+											costCentreCode, Arrays.asList("ECA"), searchValue);
+							break;
+						default:
+							tempList = courseCatalogRepository.findByGenericCourseTypeAndClassOption(campusCode, 
+											courseSystem, egbGroupId, programGroup, semesterSubId, classGroupId, 
+											classType, programGroupCode, programSpecCode, costCentreCode, 
+											Arrays.asList("ECA"));
+							break;
 					}
 					break;
 					

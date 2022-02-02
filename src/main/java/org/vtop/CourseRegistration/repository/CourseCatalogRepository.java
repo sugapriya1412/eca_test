@@ -524,6 +524,36 @@ public interface CourseCatalogRepository extends JpaRepository<CourseCatalogMode
 								List<String> courseCode, String progGroupCode, String progSpecCode, String costCentreCode);
 	
 	
+	//By Generic Course Type used for Extra Curricular Activity 
+	@Query("select a from CourseCatalogModel a where a.campusCode=?1 and a.courseSystem "+
+			"in (?2) and (a.groupId in (?3) or (a.groupCode=?4 or a.groupCode like ?4||'/%' "+
+			"or a.groupCode like '%/'||?4||'/%' or a.groupCode like '%/'||?4)) and "+
+			"a.genericCourseType in (?11) and a.status=0 and a.courseId in "+
+			"(select distinct b.courseId from CourseAllocationModel b where b.semesterSubId=?5 "+
+			"and b.clsGrpMasterGroupId in (?6) and b.classType in (?7) and "+
+			"(b.classOption=1 or (b.classOption=2 and b.specializationBatch=?8) or "+
+			"(b.classOption=3 and b.specializationBatch=?9) or (b.classOption=4 and "+
+			"b.specializationBatch=?10)) and b.lockStatus=0) order by a.ownerCode, a.code, a.courseVersion")
+	List<CourseCatalogModel> findByGenericCourseTypeAndClassOption(String campusCode, String[] courseSystem, 
+								List<Integer> egbGroupId, String groupCode, String semesterSubId, String[] classGroupId, 
+								String[] classType, String progGroupCode, String progSpecCode, String costCentreCode, 
+								List<String> genericCourseType);
+	
+	@Query("select a from CourseCatalogModel a where a.campusCode=?1 and a.courseSystem "+
+			"in (?2) and (a.groupId in (?3) or (a.groupCode=?4 or a.groupCode like ?4||'/%' "+
+			"or a.groupCode like '%/'||?4||'/%' or a.groupCode like '%/'||?4)) and "+
+			"a.genericCourseType in (?11) and a.code=?12 and a.status=0 and a.courseId in "+
+			"(select distinct b.courseId from CourseAllocationModel b where b.semesterSubId=?5 "+
+			"and b.clsGrpMasterGroupId in (?6) and b.classType in (?7) and "+
+			"(b.classOption=1 or (b.classOption=2 and b.specializationBatch=?8) or "+
+			"(b.classOption=3 and b.specializationBatch=?9) or (b.classOption=4 and "+
+			"b.specializationBatch=?10)) and b.lockStatus=0) order by a.ownerCode, a.code, a.courseVersion")
+	List<CourseCatalogModel> findByGenericCourseTypeClassOptionAndCourseCode(String campusCode, String[] courseSystem, 
+								List<Integer> egbGroupId, String groupCode, String semesterSubId, String[] classGroupId, 
+								String[] classType, String progGroupCode, String progSpecCode, String costCentreCode, 
+								List<String> genericCourseType, String courseCode);
+	
+	
 	/*@Query("select a from CourseCatalogModel a where a.code=?1 and a.courseVersion=?2")
 	CourseCatalogModel findByCourseCodeAndVersion(String code, float courseVersion);
 	

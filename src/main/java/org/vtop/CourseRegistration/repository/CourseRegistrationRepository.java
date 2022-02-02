@@ -408,6 +408,44 @@ public interface CourseRegistrationRepository extends JpaRepository<CourseRegist
 					"a.COURSE_CATALOG_COURSE_ID, COURSE_TYPE_ORDER", nativeQuery=true)
 	List<Object[]> findByRegisterNumber3(String semesterSubId, String registerNumber);
 	
+	@Query(value="SELECT f.CLSSGRP_MASTER_CLASS_GROUP_ID, j.DESCRIPTION as CLASS_GROUP_DESCRIPTION, "+
+					"a.COURSE_CATALOG_COURSE_ID, b.CODE, b.TITLE, b.GENERIC_COURSE_TYPE, "+
+					"a.COURSE_OPTION_MASTER_CODE, d.DESCRIPTION as COURSE_OPTION_DESCRIPTION, "+
+					"a.CRSTYPCMPNTMASTER_COURSE_TYPE, c.DESCRIPTION as COURSE_TYPE_DESCRIPTION, "+
+					"(case when ((a.CRSTYPCMPNTMASTER_COURSE_TYPE = 'ETH') or (a.CRSTYPCMPNTMASTER_COURSE_TYPE = 'TH') or "+
+					"(a.CRSTYPCMPNTMASTER_COURSE_TYPE = 'SS')) then b.LECTURE_HOURS else 0 end) as LECTURE_HOUR, "+
+					"(case when ((a.CRSTYPCMPNTMASTER_COURSE_TYPE = 'ETH') or (a.CRSTYPCMPNTMASTER_COURSE_TYPE = 'TH')) "+
+					"then b.TUTORIAL_HOURS else 0 end) as TUTORIAL_HOUR, "+
+					"(case when ((a.CRSTYPCMPNTMASTER_COURSE_TYPE = 'ELA') or (a.CRSTYPCMPNTMASTER_COURSE_TYPE = 'LO') or "+
+					"(a.CRSTYPCMPNTMASTER_COURSE_TYPE = 'SS')) then b.PRACTICAL_HOURS else 0 end) as PRACTICAL_HOUR, "+
+					"(case when (a.CRSTYPCMPNTMASTER_COURSE_TYPE = 'EPJ') then b.PRACTICAL_HOURS else 0 end) "+
+					"as PROJECT_HOUR, (case when (a.CRSTYPCMPNTMASTER_COURSE_TYPE = 'ETH') then b.LECTURE_CREDITS "+
+					"when (a.CRSTYPCMPNTMASTER_COURSE_TYPE = 'ELA') then b.PRACTICAL_CREDITS "+
+					"when (a.CRSTYPCMPNTMASTER_COURSE_TYPE = 'EPJ') then b.PROJECT_CREDITS else b.CREDITS end) "+
+					"as CREDIT, b.EVALUATION_TYPE, a.COURSE_ALLOCATION_CLASS_ID, i.SLOT_NAME, f.ROOM_MASTER_ROOM_NUMBER, "+
+					"f.ERP_ID, g.FIRST_NAME, h.CODE as SCHOOL_CODE, a.RGSTRTNSTSMSTR_STATUS_NUMBER, e.DESCRIPTION "+
+					"as STATUS_DESCRIPTION, e.FONT_COLOUR, a.INVOICES_INVOICE_NUMBER, to_char(a.LOG_TIMESTAMP,'DD-Mon-YYYY') "+
+					"as reg_date, (case when (f.CLSSGRP_MASTER_CLASS_GROUP_ID = 'ALL') then 1 "+
+					"when (f.CLSSGRP_MASTER_CLASS_GROUP_ID = 'WEI') then 2 else 3 end) as CLASS_GROUP_ORDER, "+
+					"(case when (a.CRSTYPCMPNTMASTER_COURSE_TYPE = 'ETH') then 2 when (a.CRSTYPCMPNTMASTER_COURSE_TYPE = 'ELA') "+
+					"then 3 when (a.CRSTYPCMPNTMASTER_COURSE_TYPE = 'EPJ') then 4 else 1 end) as COURSE_TYPE_ORDER, "+
+					"i.PATTERN_ID, f.TIME_TABLE_SLOT_ID FROM ACADEMICS.COURSE_REGISTRATION a, ACADEMICS.COURSE_CATALOG b, "+
+					"ACADEMICS.COURSE_TYPE_COMPONENT_MASTER c, ACADEMICS.COURSE_OPTION_MASTER d, "+
+					"ACADEMICS.REGISTRATION_STATUS_MASTER e, ACADEMICS.COURSE_ALLOCATION f, "+
+					"HRMS.EMPLOYEE_PROFILE g, VTOPMASTER.COST_CENTRE h, ACADEMICS.TIME_TABLE i, "+
+					"ACADEMICS.CLASS_GROUP_MASTER j where a.SEMSTR_DETAILS_SEMESTER_SUB_ID=?1 and "+
+					"a.STDNTSLGNDTLS_REGISTER_NUMBER=?2 and f.CLSSGRP_MASTER_CLASS_GROUP_ID in (?3) and "+
+					"a.COURSE_CATALOG_COURSE_ID=b.COURSE_ID and a.CRSTYPCMPNTMASTER_COURSE_TYPE=c.COURSE_TYPE and "+
+					"a.COURSE_OPTION_MASTER_CODE=d.CODE and a.RGSTRTNSTSMSTR_STATUS_NUMBER=e.STATUS_NUMBER and "+
+					"a.COURSE_ALLOCATION_CLASS_ID=f.CLASS_ID and a.SEMSTR_DETAILS_SEMESTER_SUB_ID=f.SEMSTR_DETAILS_SEMESTER_SUB_ID "+
+					"and a.COURSE_CATALOG_COURSE_ID=f.COURSE_CATALOG_COURSE_ID and "+
+					"a.CRSTYPCMPNTMASTER_COURSE_TYPE=f.CRSTYPCMPNTMASTER_COURSE_TYPE and "+
+					"b.COURSE_ID=f.COURSE_CATALOG_COURSE_ID and f.ERP_ID=g.EMPLOYEE_ID and "+
+					"f.TIME_TABLE_SLOT_ID=i.SLOT_ID and f.CLSSGRP_MASTER_CLASS_GROUP_ID=j.CLASS_GROUP_ID and "+
+					"g.COST_CENTRE_CENTRE_ID=h.CENTRE_ID order by CLASS_GROUP_ORDER, f.CLSSGRP_MASTER_CLASS_GROUP_ID, "+
+					"a.COURSE_CATALOG_COURSE_ID, COURSE_TYPE_ORDER", nativeQuery=true)
+	List<Object[]> findByRegisterNumberAndClassGroup3(String semesterSubId, String registerNumber, String[] classGroupId);
+	
 	@Query(value="SELECT a.COURSE_CATALOG_COURSE_ID, b.CODE, b.TITLE, b.GENERIC_COURSE_TYPE, "+
 					"a.COURSE_OPTION_MASTER_CODE, d.DESCRIPTION as COURSE_OPTION_DESCRIPTION, "+
 					"a.CRSTYPCMPNTMASTER_COURSE_TYPE, c.DESCRIPTION as COURSE_TYPE_DESCRIPTION, "+
@@ -432,7 +470,7 @@ public interface CourseRegistrationRepository extends JpaRepository<CourseRegist
 					"ACADEMICS.REGISTRATION_STATUS_MASTER e, ACADEMICS.COURSE_ALLOCATION f, "+
 					"HRMS.EMPLOYEE_PROFILE g, VTOPMASTER.COST_CENTRE h, ACADEMICS.TIME_TABLE i where "+
 					"a.SEMSTR_DETAILS_SEMESTER_SUB_ID=?1 and a.STDNTSLGNDTLS_REGISTER_NUMBER=?2 and "+
-					"f.CLSSGRP_MASTER_CLASS_GROUP_ID in (?3) and b.GENERIC_COURSE_TYPE not in ('ECA') and "+
+					"f.CLSSGRP_MASTER_CLASS_GROUP_ID in (?3) and "+
 					"a.COURSE_CATALOG_COURSE_ID=b.COURSE_ID and a.CRSTYPCMPNTMASTER_COURSE_TYPE=c.COURSE_TYPE and "+
 					"a.COURSE_OPTION_MASTER_CODE=d.CODE and a.RGSTRTNSTSMSTR_STATUS_NUMBER=e.STATUS_NUMBER and "+
 					"a.COURSE_ALLOCATION_CLASS_ID=f.CLASS_ID and a.SEMSTR_DETAILS_SEMESTER_SUB_ID=f.SEMSTR_DETAILS_SEMESTER_SUB_ID "+
@@ -579,6 +617,65 @@ public interface CourseRegistrationRepository extends JpaRepository<CourseRegist
 					"order by a.SEMSTR_DETAILS_SEMESTER_SUB_ID, a.course_code", nativeQuery=true)
 	List<Object[]> findWaitingByRegisterNumberAndCourseOption(List<String> semesterSubId, List<String> registerNumber, 
 						List<String> courseOptionCode);
+	
+	
+	//Extra Curricular Activity
+	@Query(value="select distinct a.reg_type, a.course_code, a.course_title, a.GENERIC_COURSE_TYPE from "+
+					"(select 'REG' as reg_type, b.CODE as course_code, b.TITLE as course_title, b.GENERIC_COURSE_TYPE from "+
+					"ACADEMICS.COURSE_REGISTRATION a, ACADEMICS.COURSE_CATALOG b where a.SEMSTR_DETAILS_SEMESTER_SUB_ID=?1 "+
+					"and a.STDNTSLGNDTLS_REGISTER_NUMBER=?2 and a.COURSE_CATALOG_COURSE_ID=b.COURSE_ID and b.GENERIC_COURSE_TYPE=?3 "+
+					"union all "+
+					"(select 'WL' as reg_type, b.CODE as course_code, b.TITLE as course_title, b.GENERIC_COURSE_TYPE from "+
+					"ACADEMICS.COURSE_REGISTRATION_WAITING a, ACADEMICS.COURSE_CATALOG b where a.SEMSTR_DETAILS_SEMESTER_SUB_ID=?1 "+
+					"and a.STDNTSLGNDTLS_REGISTER_NUMBER=?2 and a.COURSE_CATALOG_COURSE_ID=b.COURSE_ID and b.GENERIC_COURSE_TYPE=?3)) a "+
+					"order by a.reg_type, a.course_code", nativeQuery=true)
+	List<Object[]> findRegistrationAndWLByRegisterNumberAndGenericCourseType(String semesterSubId, String registerNumber, 
+						String genericCourseType);
+	
+	@Query(value="select distinct a.reg_type, a.course_code, a.course_title, a.GENERIC_COURSE_TYPE from "+
+					"(select 'REG' as reg_type, b.CODE as course_code, b.TITLE as course_title, b.GENERIC_COURSE_TYPE from "+
+					"ACADEMICS.COURSE_REGISTRATION a, ACADEMICS.COURSE_CATALOG b where a.SEMSTR_DETAILS_SEMESTER_SUB_ID=?1 "+
+					"and a.STDNTSLGNDTLS_REGISTER_NUMBER=?2 and a.COURSE_CATALOG_COURSE_ID=b.COURSE_ID and "+
+					"b.GENERIC_COURSE_TYPE=?4 and "+
+					"(b.CODE in (select EQUIVALENT_COURSE_CODE from ACADEMICS.COURSE_EQUIVALANCES where COURSE_CODE=?3) "+
+					"or b.CODE in (select COURSE_CODE from ACADEMICS.COURSE_EQUIVALANCES where EQUIVALENT_COURSE_CODE=?3)) "+
+					"union all "+
+					"(select 'WL' as reg_type, b.CODE as course_code, b.TITLE as course_title, b.GENERIC_COURSE_TYPE from "+
+					"ACADEMICS.COURSE_REGISTRATION_WAITING a, ACADEMICS.COURSE_CATALOG b where a.SEMSTR_DETAILS_SEMESTER_SUB_ID=?1 "+
+					"and a.STDNTSLGNDTLS_REGISTER_NUMBER=?2 and a.COURSE_CATALOG_COURSE_ID=b.COURSE_ID and "+
+					"b.GENERIC_COURSE_TYPE=?4 and (b.CODE in "+
+					"(select EQUIVALENT_COURSE_CODE from ACADEMICS.COURSE_EQUIVALANCES where COURSE_CODE=?3) or b.CODE in "+
+					"(select COURSE_CODE from ACADEMICS.COURSE_EQUIVALANCES where EQUIVALENT_COURSE_CODE=?3)))) a "+
+					"order by a.reg_type, a.course_code", nativeQuery=true)
+	List<Object[]> findCERegistrationAndWLByRegisterNumberCourseCodeAndGenCourseType(String semesterSubId, String registerNumber, 
+						String courseCode, String genericCourseType);
+	
+	@Query(value="select distinct a.SEMSTR_DETAILS_SEMESTER_SUB_ID, b.DESCRIPTION, a.STDNTSLGNDTLS_REGISTER_NUMBER, "+
+					"a.COURSE_CATALOG_COURSE_ID, c.CODE, c.LECTURE_CREDITS, c.PRACTICAL_CREDITS, c.PROJECT_CREDITS, "+
+					"c.CREDITS, c.GENERIC_COURSE_TYPE, a.COURSE_OPTION_MASTER_CODE, b.START_DATE from "+
+					"ACADEMICS.COURSE_REGISTRATION a, ACADEMICS.SEMESTER_DETAILS b, ACADEMICS.COURSE_CATALOG c where "+
+					"a.STDNTSLGNDTLS_REGISTER_NUMBER in (?1) and a.CRSTYPCMPNTMASTER_COURSE_TYPE='ECA' and "+
+					"a.SEMSTR_DETAILS_SEMESTER_SUB_ID=b.SEMESTER_SUB_ID and a.COURSE_CATALOG_COURSE_ID=c.COURSE_ID and "+
+					"c.GENERIC_COURSE_TYPE='ECA' order by b.START_DATE desc, a.SEMSTR_DETAILS_SEMESTER_SUB_ID", 
+					nativeQuery=true)
+	List<Object[]> findECAPrevSemCourseRegistrationByRegisterNumber(List<String> registerNumber);
+	
+	@Query(value="select distinct a.SEMSTR_DETAILS_SEMESTER_SUB_ID, b.DESCRIPTION, c.CODE, a.STDNTSLGNDTLS_REGISTER_NUMBER, "+
+					"a.COURSE_CATALOG_COURSE_ID, c.LECTURE_CREDITS, c.PRACTICAL_CREDITS, c.PROJECT_CREDITS, c.CREDITS, "+
+					"c.GENERIC_COURSE_TYPE, a.COURSE_OPTION_MASTER_CODE, b.START_DATE from "+
+					"ACADEMICS.COURSE_REGISTRATION a, ACADEMICS.SEMESTER_DETAILS b, ACADEMICS.COURSE_CATALOG c where "+
+					"a.STDNTSLGNDTLS_REGISTER_NUMBER in (?1) and a.CRSTYPCMPNTMASTER_COURSE_TYPE='ECA' and "+
+					"a.SEMSTR_DETAILS_SEMESTER_SUB_ID=b.SEMESTER_SUB_ID and a.COURSE_CATALOG_COURSE_ID=c.COURSE_ID and "+
+					"c.GENERIC_COURSE_TYPE='ECA' and (code in (select EQUIVALENT_COURSE_CODE from ACADEMICS.COURSE_EQUIVALANCES "+
+					"where COURSE_CODE=?2) or code in (select COURSE_CODE from ACADEMICS.COURSE_EQUIVALANCES where "+
+					"EQUIVALENT_COURSE_CODE=?2)) order by b.START_DATE desc, a.SEMSTR_DETAILS_SEMESTER_SUB_ID", 
+					nativeQuery=true)
+	List<Object[]> findECAPrevSemCourseRegistrationCEByRegisterNumber(List<String> registerNumber, String courseCode);
+		
+	@Query(value="select count(distinct COURSE_CATALOG_COURSE_ID) as reg_count from ACADEMICS.COURSE_REGISTRATION where "+
+					"SEMSTR_DETAILS_SEMESTER_SUB_ID=?1 and STDNTSLGNDTLS_REGISTER_NUMBER=?2 and CRSTYPCMPNTMASTER_COURSE_TYPE='ECA'", 
+					nativeQuery=true)
+	Integer findECACourseCountByRegisterNumber(String semesterSubId, String registerNumber);
 	
 	
 	/*@Query("select a from CourseRegistrationModel a where a.courseRegistrationPKId.semesterSubId=?1 "+

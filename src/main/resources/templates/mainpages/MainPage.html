@@ -38,8 +38,8 @@
 								style="padding: 5px 10px;border: 1px solid #ddd;width:86%;">
 									<option value="1">Course Code</option>
 								</select>
-								</div>
 							</div>
+						</div>
 				</div>
 				
 				<div id="searchRow3" style="display: none;float:left;text-align:center;width:100%;">
@@ -64,13 +64,9 @@
 						<li><i class="fa fa-home" aria-hidden="true" style="color:green;"></i>
 						<button onclick="viewRegOption();" class="link" style="font-weight: bold;">Home</button></li>
 						<li><i class="fa fa-book" aria-hidden="true" style="color:rgb(224,92,38);"></i>
-						<button onclick="viewRegistered();" class="link" style="font-weight: bold;">View Registered Course(s)</button></li>
-						<li><i class="fa fa-pencil-square-o" aria-hidden="true" style="color:rgb(220,123,36);"></i>
-						<button onclick="modifySlots();" class="link" style="font-weight: bold;">Modify Slot(s) </button></li>						
+						<button onclick="viewRegistered();" class="link" style="font-weight: bold;">View Registered Course(s)</button></li>						
 						<li><i class="fa fa-trash" style="color:red;"></i>
-						<button onclick="deleteCourse();" class="link" style="font-weight: bold;">Delete Registered Course(s)</button></li>
-						<li><i class="fa fa-area-chart" style="color:black;"></i>
-						<button onclick="curriculumCredits();" class="link" style="font-weight: bold;">Curriculum Credits View </button></li>												
+						<button onclick="deleteCourse();" class="link" style="font-weight: bold;">Delete Registered Course(s)</button></li>												
 					</ul>
 				</div>
 			</div>
@@ -91,44 +87,16 @@
 										background: #000428;  /* fallback for old browsers */
 										background: -webkit-linear-gradient(to right, #004e92, #000428);  /* Chrome 10-25, Safari 5.1-6 */
 										background: linear-gradient(to right, #004e92, #000428); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-										color:white;">
-									Credits
-								</td>
-								<td style="width: 20%;
-										background: #000428;  /* fallback for old browsers */
-										background: -webkit-linear-gradient(to right, #004e92, #000428);  /* Chrome 10-25, Safari 5.1-6 */
-										background: linear-gradient(to right, #004e92, #000428); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 										color:white; ">
 									Courses
 								</td>
 							</tr>
-							
-							<tr>
-								<td style="background: #000428;  /* fallback for old browsers */
-										background: -webkit-linear-gradient(to right, #004e92, #000428);  /* Chrome 10-25, Safari 5.1-6 */
-										background: linear-gradient(to right, #004e92, #000428); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-										color:white; ">Maximum</td>
-								<td style="text-align: center; font-weight: bold;"
-									th:text="${(maxCredit == null) ? '0' : maxCredit}"></td>
-								<td style="text-align: center; font-weight: bold;"> - </td>
-							</tr>
-							
-							<tr>
-								<td style="background: #000428;  /* fallback for old browsers */
-										background: -webkit-linear-gradient(to right, #004e92, #000428);  /* Chrome 10-25, Safari 5.1-6 */
-										background: linear-gradient(to right, #004e92, #000428); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-										color:white; ">Minimum</td>
-								<td style="text-align: center; font-weight: bold;" th:text="${minCredit}"></td>
-								<td style="text-align: center; font-weight: bold;"> - </td>
-							</tr>
-							
+														
 							<tr>
 								<td style="background: #000428;  /* fallback for old browsers */
 										background: -webkit-linear-gradient(to right, #004e92, #000428);  /* Chrome 10-25, Safari 5.1-6 */
 										background: linear-gradient(to right, #004e92, #000428); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 										color:white; ">Registered</td>
-								<td style="text-align: center; font-weight: bold;" 
-									th:text="${(regCredit == null) ? '0' : regCredit}"></td>
 								<td style="text-align: center; font-weight: bold;" 
 									th:text="${(regCount == null) ? '0' : regCount}"></td>
 							</tr>
@@ -138,8 +106,6 @@
 										background: -webkit-linear-gradient(to right, #004e92, #000428);  /* Chrome 10-25, Safari 5.1-6 */
 										background: linear-gradient(to right, #004e92, #000428); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 										color:white; ">Waiting</td>
-								<td style="text-align: center; font-weight: bold;" 
-									th:text="${(wlCredit == null) ? '0' : wlCredit}"></td>
 								<td style="text-align: center; font-weight: bold;" 
 									th:text="${(wlCount == null) ? '0' : wlCount}"></td>
 							</tr>
@@ -965,8 +931,12 @@
 				{
 					compName = "Soft Skill";	
 				}
+				else if ($(this).val() == 'ECA')
+				{
+					compName = "CO-EXTRA CURRICULAR ACTIVITY";	
+				}
 				
-				if (($(this).val() == 'ETH') || ($(this).val() == 'TH') || ($(this).val() == 'SS') || ($(this).val() == 'LO'))
+				if (($(this).val() == 'ETH') || ($(this).val() == 'TH') || ($(this).val() == 'SS') || ($(this).val() == 'LO') || ($(this).val() == 'ECA'))
 				{
 					
 					if (document.getElementById("classnbr1")!=null)

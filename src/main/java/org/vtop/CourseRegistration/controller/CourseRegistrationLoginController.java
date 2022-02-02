@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -19,9 +18,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.vtop.CourseRegistration.service.CompulsoryCourseConditionDetailService;
 import org.vtop.CourseRegistration.service.CourseRegistrationCommonFunction;
 import org.vtop.CourseRegistration.service.ProgrammeSpecializationCurriculumCreditService;
+import org.vtop.CourseRegistration.service.ProgrammeSpecializationCurriculumDetailService;
 import org.vtop.CourseRegistration.service.RegistrationLogService;
 import org.vtop.CourseRegistration.service.SemesterMasterService;
-import org.vtop.CourseRegistration.service.WishlistRegistrationService;
 import org.vtop.CourseRegistration.service.StudentHistoryService;
 
 
@@ -33,8 +32,8 @@ public class CourseRegistrationLoginController
 	@Autowired private ProgrammeSpecializationCurriculumCreditService programmeSpecializationCurriculumCreditService;
 	@Autowired private RegistrationLogService registrationLogService;
 	@Autowired private CompulsoryCourseConditionDetailService compulsoryCourseConditionDetailService;
-	@Autowired private WishlistRegistrationService wishlistRegistrationService;
 	@Autowired private SemesterMasterService semesterMasterService;
+	@Autowired private ProgrammeSpecializationCurriculumDetailService programmeSpecializationCurriculumDetailService;
 		
 	//private static final String CAMPUSCODE = "VLR";
 	private static final String RegErrorMethod = "WS2122REG";
@@ -46,10 +45,9 @@ public class CourseRegistrationLoginController
 						HttpServletResponse response) throws ServletException, IOException, 
 						ParseException 
 	{	
-		int testStatus = 1; //Login with Password & Captcha-> 1: Enable/ 2: Disable
+		int testStatus = 2; //Login with Password & Captcha-> 1: Enable/ 2: Disable
 		int regSlotCheckStatus = 2; //If Permitted Schedule-> 1: Date & Time / 2: Only Date
 		int regTimeCheckStatus = 1; //Time-> 1: Open Hours/ 2: Permitted Schedule
-		int wishListCheckStatus = 2; //1: Enable/ 2: Disable
 		int historyCallStatus = 1; //Student History-> 1: Procedure/ 2: Table
 		int cgpaStatus = 1; //Student CGPA & Credit Detail-> 1: Dynamic/ 2: Static
 		
@@ -57,15 +55,15 @@ public class CourseRegistrationLoginController
 		int approvalStatus = 1; //Registration Status Approval-> 1: Enable/ 2: Disable
 		int waitingListStatus = 2; //Waiting List Allow Status-> 1: Enable/ 2: Disable
 		int OptionNAStatus = 1; //Option Not Allowed Status-> 1: Enable/ 2: Disable
-		int compulsoryCourseStatus = 1; //Compulsory Course Allow Status-> 1: Enable/ 2: Disable
-		int otpStatus = 1; //OTP Send Status-> 1: Enable/ 2: Disable
+		int compulsoryCourseStatus = 2; //Compulsory Course Allow Status-> 1: Enable/ 2: Disable
+		int otpStatus = 2; //OTP Send Status-> 1: Enable/ 2: Disable
 		
 		int maxCredit = 27, minCredit = 16, studyStartYear = 0, studentSemester = 0;	
 		int studentGraduateYear = 0, academicYear = 0, academicGraduateYear = 0, cclTotalCredit = 0;				
 		int lockStatus = 2, validateLogin = 2, activeStatus = 2, allowStatus = 2;
 		int checkFlag = 2, checkFlag2 = 2, checkFlag3 = 2, checkFlag4 = 2, checkFlag5 = 2, checkFlag6 = 2;
 		int checkFlag7 = 2, checkFlag8 = 2, checkFlag9 = 2, checkFlag10 = 2, checkFlag11 = 2;
-		Integer updateStatus = 0, exemptionStatus = 0, regularFlag = 2,reRegFlag = 2,schStatus = 0, wsltCount = 0;
+		Integer updateStatus = 0, exemptionStatus = 0, regularFlag = 2,reRegFlag = 2,schStatus = 0;
 		Integer programDuration = 0, groupId = 0, specId = 0, feeId = 0, graduationStatus = 0, costCenterId = 0;
 		float cclVersion = 0;
 				
@@ -79,8 +77,8 @@ public class CourseRegistrationLoginController
 		String currentDateTimeStr = "", returnVal = "", checkCourseSystem = "";
 				
 		SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy");		
-		Date startDate = format.parse("03-JAN-2022");
-		Date endDate = format.parse("05-JAN-2022");
+		Date startDate = format.parse("01-FEB-2022");
+		Date endDate = format.parse("04-FEB-2022");
 		String startTime = "10:00:00", endTime = "23:59:59", allowStartTime = "10:00:00";
 		
 		String[] statusMsg = new String[]{};
@@ -89,7 +87,6 @@ public class CourseRegistrationLoginController
 		String[] registerNumberArray = new String[2];
 		List<Integer> egbProgramInt = new ArrayList<Integer>();
 		List<String> registerNumberList = new ArrayList<String>();
-		List<Object[]> fGradeList = new ArrayList<Object[]>();
 				
 		Integer semesterId = 0,  wlCount = 0, regCount = 0;
 		Integer regCredit = 0, wlCredit= 0;
@@ -264,8 +261,7 @@ public class CourseRegistrationLoginController
 							academicGraduateYear = Integer.parseInt(e[6].toString());
 							break;
 						}
-						classGroupId = courseRegCommonFn.callClassGroup(semesterId, programGroupCode, costCentreCode,
-											academicYear, academicGraduateYear, studyStartYear, studentGraduateYear);
+						classGroupId = "CECA";
 					}
 					//System.out.println("semesterId: "+ semesterId +" | academicYear: "+ academicYear 
 					//		+" | academicGraduateYear: "+ academicGraduateYear +" | classGroupId: "+ classGroupId);
@@ -402,30 +398,40 @@ public class CourseRegistrationLoginController
 			//Checking the Allowed Admission Year/ Programme Group/ Programme Specialization
 			if (checkFlag5 == 1)
 			{
-				if (studyStartYear == academicYear)
+				if ((studyStartYear >= 2010) && (studyStartYear <= 2018))
 				{
-					msg = studyStartYear +" students are not allowed for Registration.";
-				}
-				else if (studyStartYear < academicYear)
-				{
-					if (programGroupCode.equals("BBA") || programGroupCode.equals("BCA") 
-							|| programGroupCode.equals("BCOM") || programGroupCode.equals("BSC") 
-							|| programGroupCode.equals("BSC4") || programGroupCode.equals("BDES") 
-							|| programGroupCode.equals("MDES") || programGroupCode.equals("BARCH")
-							|| programGroupCode.equals("BVOC") 
-							|| programGroupCode.equals("MBA") || programGroupCode.equals("MBA5") 
-							|| (programGroupCode.equals("RP") && costCentreCode.equals("VITBS")))
+					if (programGroupCode.equals("BTECH") || programGroupCode.equals("BBA") 
+							|| programGroupCode.equals("BCA") || programGroupCode.equals("BCOM") 
+							|| programGroupCode.equals("BSC") || programGroupCode.equals("BSC4")
+							|| programGroupCode.equals("BDES") || programGroupCode.equals("BARCH")
+							|| programGroupCode.equals("MSC5") || programGroupCode.equals("MTECH5") 
+							|| programGroupCode.equals("MSSE"))
 					{
-						msg = programGroupCode +" - "+ specDesc +" students are not allowed for Registration.";
+						checkFlag6 = 1;
 					}
 					else
 					{
+						msg = programGroupCode +" - "+ specDesc +" students are not allowed for Registration.";
+					}
+				}
+				else if ((studyStartYear >= 2019) && (studyStartYear < academicYear))
+				{
+					if (programGroupCode.equals("BTECH") || programGroupCode.equals("BBA") 
+							|| programGroupCode.equals("BCA") || programGroupCode.equals("BCOM") 
+							|| programGroupCode.equals("BSC") || programGroupCode.equals("BSC4")  
+							|| programGroupCode.equals("BDES") || programGroupCode.equals("BARCH")
+							|| programGroupCode.equals("MSC5") || programGroupCode.equals("MTECH5"))
+					{
 						checkFlag6 = 1;
+					}
+					else
+					{
+						msg = programGroupCode +" - "+ specDesc +" students are not allowed for Registration.";
 					}
 				}
 				else
 				{
-					msg = studyStartYear +" students are not allowed for Registration.";
+					msg = studyStartYear +" batch students are not allowed for Registration.";
 				}
 			}
 			
@@ -553,20 +559,20 @@ public class CourseRegistrationLoginController
 				
 				if (studentHistoryStatus.equals("SUCCESS"))
 				{
-					if (regularFlag == 1)
+					lcObjList.clear();
+					lcObjList = studentHistoryService.getECAStudentHistoryByEligibleGrade(registerNumberList);
+					if (lcObjList.isEmpty())
 					{
 						checkFlag10 = 1;
 					}
 					else
 					{
-						fGradeList = studentHistoryService.getStudentHistoryGIAndFailCourse(Arrays.asList(registerNo, oldRegNo));
-						if (fGradeList.size() > 0) 
+						for (Object[] e: lcObjList)
 						{
-							checkFlag10 = 1;
-						}
-						else
-						{
-							msg = "You dont have F or N grade courses, so you are not eligible for registration.";
+							msg = "You already studied one of the ECA course and obtained the "+ e[0].toString() 
+									+" grade.  Only one ECA course with pass grade was allowed to register within "
+									+"your programme duration.";
+							break;
 						}
 					}
 				}
@@ -574,42 +580,77 @@ public class CourseRegistrationLoginController
 				{
 					msg = "You dont have grade history to proceed for registration.";
 				}
-			}
+			}		
 			
-			//Checking the Wishlist Registration
 			if (checkFlag10 == 1)
 			{
-				if (wishListCheckStatus == 1)
+				//Getting Curriculum Detail
+				lcObjList.clear();
+				lcObjList = programmeSpecializationCurriculumCreditService.getMaxVerDetailBySpecIdAndAdmYear2(specId, studyStartYear);
+				if (!lcObjList.isEmpty())
 				{
-					if (programGroupCode.equals("RP") || (studentGraduateYear <= academicGraduateYear))
+					for (Object[] e :lcObjList)
 					{
-						checkFlag11 = 1;
+						cclVersion = Float.parseFloat(e[0].toString());
+						cclTotalCredit = Integer.parseInt(e[5].toString());
+						checkCourseSystem = e[8].toString();
+						break;
 					}
-					else if ((exemptionStatus == 1) || (exemptionStatus == 3))
+				}
+				//System.out.println("curriculumVersion: "+ cclVersion +" | cclTotalCredit: "+ cclTotalCredit 
+				//		+" | checkCourseSystem: "+ checkCourseSystem);
+								
+				if (programGroupCode.equals("RP") || programGroupCode.equals("IEP"))
+				{
+					courseSystem[0] = "FFCS";
+					courseSystem[1] = "CAL";
+				}
+				else
+				{
+					if ((checkCourseSystem != null) && (!checkCourseSystem.equals("")) 
+							 && (!checkCourseSystem.equals("FFCS")) && (!checkCourseSystem.equals("NONFFCS")))
+					{
+						courseSystem[0] = checkCourseSystem;
+						courseSystem[1] = "NONE";
+					}
+					else
+					{
+						courseSystem[0] = "FFCS";
+						courseSystem[1] = "NONE";
+					}
+				}
+				
+				if ((registrationMethod.equals("GEN")) && (!programGroupCode.equals("RP")) 
+						&& (!programGroupCode.equals("IEP")))
+				{
+					registrationMethod = "FFCS";
+				}
+				//System.out.println("courseSystem: "+ courseSystem +" | registrationMethod (After): "+ registrationMethod);
+				
+				if (checkCourseSystem.equals("NONFFCS"))
+				{
+					msg = "You are not eliible for Extra curricular activity course registration";
+				}
+				else if (checkCourseSystem.equals("FFCS"))
+				{
+					checkFlag11 = 1;
+				}
+				else
+				{
+					lcObjList.clear();
+					lcObjList = programmeSpecializationCurriculumDetailService.getExtraCurricularCourse(
+										specId, studyStartYear, cclVersion);
+					if(!lcObjList.isEmpty())
 					{
 						checkFlag11 = 1;
 					}
 					else
 					{
-						wsltCount = wishlistRegistrationService.getRegisterNumberTCCount2(semesterSubId, 
-										new String[]{Arrays.toString(classGroupId.split("/"))}, registerNo);
-						if (wsltCount >= 1)
-						{
-							checkFlag11 = 1;
-						}
-						else
-						{
-							msg = "You did not register any course in Wishlist.  So you are not eligible for registration.";
-						}
+						msg = "Extra curricular activity courses are not available for your programme curriculum.  "+
+								"So, not allowed for Registration";
 					}
 				}
-				else
-				{
-					checkFlag11 = 1;
-				}
 			}
-
-						
 			/*System.out.println("checkFlag: "+ checkFlag +" | checkFlag2: "+ checkFlag2 +" | checkFlag3: "+ checkFlag3 
 					+" | checkFlag4: "+ checkFlag4 +" | checkFlag5: "+ checkFlag5 +" | checkFlag6: "+ checkFlag6 
 					+" | checkFlag7: "+ checkFlag7 +" | checkFlag8: "+ checkFlag8 +" | checkFlag9: "+ checkFlag9 
@@ -639,75 +680,7 @@ public class CourseRegistrationLoginController
 												
 				currentDateTimeStr = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a").format(currentDateTime);	
 
-				//Getting Curriculum Detail
-				lcObjList.clear();
-				lcObjList = programmeSpecializationCurriculumCreditService.getMaxVerDetailBySpecIdAndAdmYear2(specId, studyStartYear);
-				if (!lcObjList.isEmpty())
-				{
-					for (Object[] e :lcObjList)
-					{
-						cclVersion = Float.parseFloat(e[0].toString());
-						cclTotalCredit = Integer.parseInt(e[5].toString());
-						checkCourseSystem = e[8].toString();
-						break;
-					}
-				}
-				//System.out.println("curriculumVersion: "+ cclVersion +" | cclTotalCredit: "+ cclTotalCredit 
-				//		+" | checkCourseSystem: "+ checkCourseSystem);
-								
-				/*if (programGroupCode.equals("RP") || programGroupCode.equals("IEP"))
-				{
-					courseSystem[0] = "FFCS";
-					courseSystem[1] = "CAL";
-				}
-				else if ((studyStartYear >= 2017) && (registrationMethod.equals("CAL")))
-				{	
-					courseSystem[0] = "CAL";					
-					courseSystem[1] = "RCAL";					
-				}
-				else if (registrationMethod.equals("CAL"))
-				{	
-					courseSystem[0] = "CAL";					
-					courseSystem[1] = "NONE";					
-				}
-				else
-				{
-					courseSystem[0] = "FFCS";
-					courseSystem[1] = "NONE";
-					
-					if ((registrationMethod.equals("GEN")) && (!programGroupCode.equals("RP")) 
-							&& (!programGroupCode.equals("IEP")))
-					{
-						registrationMethod = "FFCS";
-					}
-				}*/
 				
-				if (programGroupCode.equals("RP") || programGroupCode.equals("IEP"))
-				{
-					courseSystem[0] = "FFCS";
-					courseSystem[1] = "CAL";
-				}
-				else
-				{
-					if ((checkCourseSystem != null) && (!checkCourseSystem.equals("")) 
-							 && (!checkCourseSystem.equals("FFCS")) && (!checkCourseSystem.equals("NONFFCS")))
-					{
-						courseSystem[0] = checkCourseSystem;
-						courseSystem[1] = "NONE";
-					}
-					else
-					{
-						courseSystem[0] = "FFCS";
-						courseSystem[1] = "NONE";
-					}
-				}
-				
-				if ((registrationMethod.equals("GEN")) && (!programGroupCode.equals("RP")) 
-						&& (!programGroupCode.equals("IEP")))
-				{
-					registrationMethod = "FFCS";
-				}
-				//System.out.println("courseSystem: "+ courseSystem +" | registrationMethod (After): "+ registrationMethod);
 								
 				//Login status update
 				lcObjList.clear();

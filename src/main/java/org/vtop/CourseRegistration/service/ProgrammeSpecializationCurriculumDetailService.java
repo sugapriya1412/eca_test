@@ -114,6 +114,14 @@ public class ProgrammeSpecializationCurriculumDetailService
 		return returnMapList;
 	}
 	
+	
+	//For Extra Curricular Activity
+	public List<Object[]> getExtraCurricularCourse(Integer specId, Integer admissionYear, Float ccVersion)
+	{
+		return programmeSpecializationCurriculumDetailRepository.findByAdmsnYearCCVersionAndGenericCourseType(
+					specId, admissionYear, ccVersion, Arrays.asList("ECA"));
+	}
+	
 	/*public ProgrammeSpecializationCurriculumDetailModel getOne(ProgrammeSpecializationCurriculumDetailPKModel programmeSpecializationCurriculumDetailPKModel)
 	{
 		return programmeSpecializationCurriculumDetailRepository.findOne(programmeSpecializationCurriculumDetailPKModel);

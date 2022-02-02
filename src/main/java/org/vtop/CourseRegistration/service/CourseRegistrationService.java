@@ -29,6 +29,11 @@ public class CourseRegistrationService
 		return courseRegistrationRepository.findByRegisterNumber3(semesterSubId, registerNumber);
 	}
 	
+	public List<Object[]> getByRegisterNumberAndClassGroup3(String semesterSubId, String registerNumber, String[] classGroupId)
+	{
+		return courseRegistrationRepository.findByRegisterNumberAndClassGroup3(semesterSubId, registerNumber, classGroupId);
+	}
+	
 	public List<Object[]> getByRegisterNumberAndClassGroup(String semesterSubId, String registerNumber, String[] classGroupId)
 	{
 		return courseRegistrationRepository.findByRegisterNumberAndClassGroup(semesterSubId, registerNumber, classGroupId);
@@ -205,6 +210,20 @@ public class CourseRegistrationService
 	{
 		return courseRegistrationRepository.findCancelCourseByRegisterNumberAndCourseCode(registerNumber, courseCode);
 	}
+	
+	public Integer getECACourseCountByRegisterNumber(String semesterSubId, String registerNumber)
+	{
+		Integer tempCourseCount = 0;
+		
+		tempCourseCount = courseRegistrationRepository.findECACourseCountByRegisterNumber(semesterSubId, registerNumber);
+		if (tempCourseCount == null)
+		{
+			tempCourseCount = 0;
+		}
+		
+		return tempCourseCount;
+	}
+	
 	
 	public List<Object[]> getPrevSemCourseRegistrationByRegisterNumber3(List<String> registerNumber, String courseCode)
 	{
@@ -586,7 +605,104 @@ public class CourseRegistrationService
 		
 		return returnObjectList;
 	}
-
+	
+	
+	//Extra Curricular Activity
+	public List<Object[]> getRegistrationAndWLByRegisterNumberAndGenericCourseType(String semesterSubId, String registerNumber, 
+								String genericCourseType)
+	{
+		return courseRegistrationRepository.findRegistrationAndWLByRegisterNumberAndGenericCourseType(semesterSubId, registerNumber, 
+					genericCourseType);
+	}
+	
+	public List<Object[]> getCERegistrationAndWLByRegisterNumberCourseCodeAndGenCourseType(String semesterSubId, 
+								String registerNumber, String courseCode, String genericCourseType)
+	{
+		return courseRegistrationRepository.findCERegistrationAndWLByRegisterNumberCourseCodeAndGenCourseType(semesterSubId, 
+					registerNumber, courseCode, genericCourseType);
+	}
+	
+	public List<Object[]> getECAPrevSemCourseRegistrationByRegisterNumber(List<String> registerNumber)
+	{
+		List<Object[]> prvSemRegList = new ArrayList<Object[]>();
+		List<Object[]> prvSemRPList = new ArrayList<Object[]>();
+		String prvSemSubId = "", prvSemCourseCode = "";
+		int prvSemResultFlag = 2;
+		
+		prvSemRegList = courseRegistrationRepository.findECAPrevSemCourseRegistrationByRegisterNumber(registerNumber);
+		
+		if (!prvSemRegList.isEmpty())
+		{
+			for (Object[] e: prvSemRegList)
+			{
+				prvSemSubId = e[0].toString();
+				prvSemCourseCode = e[4].toString();
+				prvSemRPList.clear();
+				//System.out.println("prvSemSubId: "+ prvSemSubId +" | prvSemCourseCode: "+ prvSemCourseCode);
+				
+				prvSemRPList = studentHistoryService.getResultPublishedCourseDataBySemRegNoAndCourseCode(
+									prvSemSubId, registerNumber, prvSemCourseCode);
+				if (!prvSemRPList.isEmpty())
+				{
+					prvSemResultFlag = 1;
+				}
+				else
+				{
+					prvSemResultFlag = 2;
+					break;
+				}
+			}
+		}
+			
+		if (prvSemResultFlag == 1)
+		{
+			prvSemRegList.clear();
+		}
+						
+		return prvSemRegList;
+	}
+	
+	public List<Object[]> getECAPrevSemCourseRegistrationCEByRegisterNumber(List<String> registerNumber, 
+								String courseCode)
+	{
+		List<Object[]> prvSemRegList = new ArrayList<Object[]>();
+		List<Object[]> prvSemRPList = new ArrayList<Object[]>();
+		String prvSemSubId = "", prvSemCourseCode = "";
+		int prvSemResultFlag = 2;
+				
+		prvSemRegList = courseRegistrationRepository.findECAPrevSemCourseRegistrationCEByRegisterNumber(
+							registerNumber, courseCode);
+		
+		if (!prvSemRegList.isEmpty())
+		{
+			for (Object[] e: prvSemRegList)
+			{
+				prvSemSubId = e[0].toString();
+				prvSemCourseCode = e[2].toString();
+				prvSemRPList.clear();
+				
+				prvSemRPList = studentHistoryService.getResultPublishedCourseDataBySemRegNoAndCourseCode(
+									prvSemSubId, registerNumber, prvSemCourseCode);
+				if (!prvSemRPList.isEmpty())
+				{
+					prvSemResultFlag = 1;
+				}
+				else
+				{
+					prvSemResultFlag = 2;
+					break;
+				}
+			}
+		}
+		
+		if (prvSemResultFlag == 1)
+		{
+			prvSemRegList.clear();
+		}
+				
+		return prvSemRegList;
+	}
+	
 	
 	/*public CourseRegistrationModel saveOne(CourseRegistrationModel courseRegistrationModel)
 	{

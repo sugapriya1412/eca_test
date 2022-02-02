@@ -66,16 +66,12 @@ public class CourseRegistrationFormController
 		String IpAddress = (String) session.getAttribute("IpAddress");
 		String msg = null, infoMsg = "", urlPage = "";
 		Integer updateStatus = 1;		
-		int allowStatus = 2, regularFlag = 2,reRegFlag = 2;
-		@SuppressWarnings("unchecked")
-		List<String> compCourseList = (List<String>) session.getAttribute("compulsoryCourseList");
-				
+		int allowStatus = 2, regularFlag = 2;
+		List<String> courseRegWaitingList = new ArrayList<String>();
+						
 		String registerNumber = (String) session.getAttribute("RegisterNumber");
 		Integer PEUEAllowStatus = (Integer) session.getAttribute("PEUEAllowStatus");
-		String programGroupCode = (String) session.getAttribute("ProgramGroupCode");
 		regularFlag = (Integer) session.getAttribute("regularFlag");
-		reRegFlag =  (Integer) session.getAttribute("reRegFlag");
-		Integer StudentGraduateYear = (Integer) session.getAttribute("StudentGraduateYear");
 				
 		model.addAttribute("regularFlag", regularFlag);
 		model.addAttribute("PEUEAllowStatus", PEUEAllowStatus);
@@ -91,19 +87,9 @@ public class CourseRegistrationFormController
 			{
 				session.setAttribute("pageAuthKey", courseRegCommonFn.generatePageAuthKey(registerNumber, 2));
 				
-				Integer maxCredit = (Integer) session.getAttribute("maxCredit");
 				String semesterSubId = (String) session.getAttribute("SemesterSubId");
-				int studyStartYear = (int) session.getAttribute("StudyStartYear");
-				Integer semesterId  = (Integer) session.getAttribute("SemesterId");
-				Integer programGroupId = (Integer) session.getAttribute("ProgramGroupId");
-				String ProgramSpecCode = (String) session.getAttribute("ProgramSpecCode");
-				Integer programSpecId = (Integer) session.getAttribute("ProgramSpecId");
 				String[] classGroupId = session.getAttribute("classGroupId").toString().split("/");
-				String pOldRegisterNumber = (String) session.getAttribute("OldRegNo"); 
-				String costCentreCode = (String) session.getAttribute("costCentreCode");
-				Integer compulsoryCourseStatus = (Integer) session.getAttribute("compulsoryCourseStatus");
-				String registrationMethod = (String) session.getAttribute("registrationMethod");
-				Float curriculumVersion = (Float) session.getAttribute("curriculumVersion");
+				Integer WaitingListStatus = (Integer) session.getAttribute("waitingListStatus");
 												
 				Date startDate = (Date) session.getAttribute("startDate");
 				Date endDate = (Date) session.getAttribute("endDate");
@@ -116,56 +102,28 @@ public class CourseRegistrationFormController
 				String[] statusMsg = returnVal.split("/");
 				allowStatus = Integer.parseInt(statusMsg[0]);
 				infoMsg = statusMsg[1];
-				
-				int compulsoryStatus = 2;
 				String registrationOption = "";
 				Integer pageSize = 5;
 				Integer page = 1;
 				Integer searchType = 0;
 				String searchVal = "";
-				String subCourseOption = "";
 								
 				switch(allowStatus)
 				{
 					case 1:
-						if (compulsoryCourseStatus == 1)
+						if (WaitingListStatus == 1)
 						{
-							compulsoryStatus = courseRegCommonFn.compulsoryCourseCheck(programGroupId, studyStartYear, 
-													StudentGraduateYear, semesterId, semesterSubId, registerNumber, 
-													classGroupId, classType, ProgramSpecCode, programSpecId, 
-													programGroupCode, pOldRegisterNumber, compCourseList, costCentreCode);
-							session.setAttribute("compulsoryCourseStatus", compulsoryStatus);
+							courseRegWaitingList = courseRegistrationWaitingService.getWaitingCourseByClassGroupId(
+																semesterSubId, registerNumber, classGroupId);
 						}
+						registrationOption = "CECA";
+						callCourseRegistrationTypes(registrationOption, pageSize, page, searchType, searchVal, session, model);
 						
-						if (compulsoryStatus == 1)
-						{
-							registrationOption = "COMP";
-							getCompulsoryCourseList(registrationOption, pageSize, page, searchType, searchVal, 
-									subCourseOption, session, model, compCourseList);
-							session.setAttribute("registrationOption", registrationOption);
-							
-							urlPage = "mainpages/CompulsoryCourseList :: section";
-						}
-						else
-						{
-							session.removeAttribute("registrationOption");
-							
-							/*model.addAttribute("regularFlag", regularFlag);
-							model.addAttribute("PEUEAllowStatus", PEUEAllowStatus);
-							model.addAttribute("reRegFlag", reRegFlag);
-							model.addAttribute("registrationMethod", registrationMethod);
-							model.addAttribute("ProgramGroupCode", programGroupCode);*/
-							
-							model.addAttribute("regOptionList", courseRegCommonFn.getRegistrationOption(programGroupCode, 
-									registrationMethod, regularFlag, reRegFlag, PEUEAllowStatus, programSpecId, studyStartYear, 
-									curriculumVersion));
-							
-							model.addAttribute("studySystem", session.getAttribute("StudySystem"));
-							model.addAttribute("maxCredit", maxCredit);
-							model.addAttribute("showFlag", 0);
-							
-							urlPage = "mainpages/RegistrationOptionList :: section";
-						}
+						model.addAttribute("courseRegWaitingList", courseRegWaitingList);
+						model.addAttribute("registrationOption", registrationOption);					
+						model.addAttribute("showFlag", 1);
+						
+						urlPage = "mainpages/CourseList :: section";
 						break;
 					
 					default:						
@@ -662,26 +620,35 @@ public class CourseRegistrationFormController
 									courseTypeArr = semesterMasterService.getCourseTypeComponentByGenericType(genericCourseType);
 									break;
 							}
-								
-							switch(courseOption)
+							
+							if (genericCourseType.equals("ECA") && courseOption.equals("CS"))
 							{
-								case "RR":
-								case "RRCE":
-								case "GI":
-								case "GICE":
-								case "RGCE":
-								case "RPCE":
-								case "RWCE":
-									subCourseOption = regStatusArr[7];
-									subCourseType = regStatusArr[9];
-									subCourseDate = regStatusArr[10];
-									break;
-								default:
-									if (regStatusArr[7].equals("NONE"))
-									{
-										subCourseOption = "";
-									}
-									break;
+								subCourseOption = regStatusArr[7];
+								subCourseType = regStatusArr[9];
+								subCourseDate = regStatusArr[10];
+							}
+							else
+							{
+								switch(courseOption)
+								{
+									case "RR":
+									case "RRCE":
+									case "GI":
+									case "GICE":
+									case "RGCE":
+									case "RPCE":
+									case "RWCE":
+										subCourseOption = regStatusArr[7];
+										subCourseType = regStatusArr[9];
+										subCourseDate = regStatusArr[10];
+										break;
+									default:
+										if (regStatusArr[7].equals("NONE"))
+										{
+											subCourseOption = "";
+										}
+										break;
+								}
 							}
 								
 							for (String crstp : courseTypeArr) 
@@ -1360,7 +1327,8 @@ public class CourseRegistrationFormController
 								}									
 							}
 															
-							if ((!courseList.equals("EPJ")) && (!courseList.equals("PJT")))
+							if ((!courseList.equals("EPJ")) && (!courseList.equals("PJT")) 
+									&& (!courseAllocationModel.getTimeTableModel().getClashSlot().equals("NONE")))
 							{
 								clashslot.add(courseAllocationModel.getTimeTableModel().getClashSlot());
 							}								
@@ -1475,52 +1443,70 @@ public class CourseRegistrationFormController
 									
 									if ((!subCourseOption.equals("")) && (!subCourseOption.equals(null)))
 									{
-										switch(courseOption)
+										if (genericCourseType.equals("ECA") && courseOption.equals("CS"))
 										{
-											case "RR":
-											case "RRCE":
-											case "GI":
-											case "GICE":
-											case "RGCE":
-											case "RPCE":
-											case "RWCE":
-												for (String e: subCourseType.split(","))
+											for (String e: subCourseType.split(","))
+											{
+												if (pSubCrTypeArr.equals(""))
 												{
-													if (pSubCrTypeArr.equals(""))
-													{
-														pSubCrTypeArr = e;
-													}
-													else
-													{
-														pSubCrTypeArr = pSubCrTypeArr +"|"+ e;
-													}
+													pSubCrTypeArr = e;
 												}
-												break;
-											case "CS":
-												String[] subCrsOptArr = subCourseOption.split("/");
-												subCourseOption = subCrsOptArr[0];
-												subCourseType = subCrsOptArr[1];
-												subCourseDate = subCrsOptArr[2];
-												for (@SuppressWarnings("unused") String courseList : clArr) 
+												else
 												{
-													if (pSubCrTypeArr.equals(""))
-													{
-														pSubCrTypeArr = subCourseType;
-													}
-													else
-													{
-														pSubCrTypeArr = pSubCrTypeArr +"|"+ subCourseType;
-													}
+													pSubCrTypeArr = pSubCrTypeArr +"|"+ e;
 												}
-												break;
-											case "MIN":
-											case "HON":
-												pSubCrTypeArr = pCompTypeArr;
-												break;
-											default:
-												subCourseType = "";
-												subCourseDate = "";
-												break;
+											}
+											break;
+										}
+										else
+										{
+											switch(courseOption)
+											{
+												case "RR":
+												case "RRCE":
+												case "GI":
+												case "GICE":
+												case "RGCE":
+												case "RPCE":
+												case "RWCE":
+													for (String e: subCourseType.split(","))
+													{
+														if (pSubCrTypeArr.equals(""))
+														{
+															pSubCrTypeArr = e;
+														}
+														else
+														{
+															pSubCrTypeArr = pSubCrTypeArr +"|"+ e;
+														}
+													}
+													break;
+												case "CS":
+													String[] subCrsOptArr = subCourseOption.split("/");
+													subCourseOption = subCrsOptArr[0];
+													subCourseType = subCrsOptArr[1];
+													subCourseDate = subCrsOptArr[2];
+													for (@SuppressWarnings("unused") String courseList : clArr) 
+													{
+														if (pSubCrTypeArr.equals(""))
+														{
+															pSubCrTypeArr = subCourseType;
+														}
+														else
+														{
+															pSubCrTypeArr = pSubCrTypeArr +"|"+ subCourseType;
+														}
+													}
+													break;
+												case "MIN":
+												case "HON":
+													pSubCrTypeArr = pCompTypeArr;
+													break;
+												default:
+													subCourseType = "";
+													subCourseDate = "";
+													break;
+											}
 										}
 									}
 									

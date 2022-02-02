@@ -1,4 +1,4 @@
-package org.vtop.CourseRegistration.controller;
+/*package org.vtop.CourseRegistration.controller;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -661,4 +661,4 @@ public class CourseRegistrationEditController
 		}
 		return urlPage;
 	}	
-}
+}*/

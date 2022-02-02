@@ -494,7 +494,55 @@ public interface StudentHistoryRepository extends JpaRepository<StudentHistoryMo
 			"  having  examinations.GRADE_LEVEL(a.grade)>=max(examinations.GRADE_LEVEL(b.grade))  order by a.regno,a.subcode", 
 			nativeQuery=true)
 	List<Object[]> findStudentHistoryForCgpaNonCalCalc(String regNo, Short pgmSpecId, Date examMonth);
-		
+	
+	
+	//Extra Curricular Activity
+	@Query(value="select a.GRADE, a.COURSE_CATALOG_COURSE_ID, a.COURSE_CODE, a.CRSTYPCMPNTMASTER_COURSE_TYPE "+
+					"as GEN_COURSE_TYPE, to_char(a.EXAM_MONTH,'DD-MON-YYYY') as examMonth, "+
+					"(case when (a.GRADE = 'S') then 1 when (a.GRADE = 'U') then 2 when (a.GRADE = 'P') then 3 "+ 
+					"when (a.GRADE = 'Pass') then 4 when (a.GRADE = 'A') then 5 when (a.GRADE = 'B') then 6 "+ 
+					"when (a.GRADE = 'C') then 7 when (a.GRADE = 'D') then 8 when (a.GRADE = 'E') then 9 "+ 
+					"else 17 end) as grade_order from academics.STUDENT_HISTORY a, academics.COURSE_TYPE_COMPONENT_MASTER b "+
+					"where a.STDNTSLGNDTLS_REGISTER_NUMBER in (?1) and (a.COURSE_CODE like 'EXC%' or "+
+					"a.CRSTYPCMPNTMASTER_COURSE_TYPE='ECA') and a.GRADE in ('S','U','P','Pass','A','B','C','D','E') "+
+					"and b.COMPONENT in (1,3) and a.CRSTYPCMPNTMASTER_COURSE_TYPE=b.COURSE_TYPE order by grade_order", 
+					nativeQuery=true)
+	List<Object[]> findECAStudentHistoryByEligibleGrade(List<String> registerNumber);
+	
+	
+	@Query(value="select a.GRADE, a.COURSE_CATALOG_COURSE_ID, a.COURSE_CODE, a.CRSTYPCMPNTMASTER_COURSE_TYPE "+
+					"as GEN_COURSE_TYPE, to_char(a.EXAM_MONTH,'DD-MON-YYYY') as examMonth, "+
+					"(case when (a.GRADE = 'S') then 1 when (a.GRADE = 'U') then 2 when (a.GRADE = 'P') then 3 "+
+					"when (a.GRADE = 'Pass') then 4 when (a.GRADE = 'A') then 5 when (a.GRADE = 'B') then 6 "+
+					"when (a.GRADE = 'C') then 7 when (a.GRADE = 'D') then 8 when (a.GRADE = 'E') then 9 "+
+					"when (a.GRADE = 'R') then 10 when (a.GRADE = 'F') then 11 when (a.GRADE = 'Fail') then 12 "+
+					"when ((a.GRADE = 'N') or (a.GRADE = 'N1') or (a.GRADE = 'N2') or (a.GRADE = 'N3') or "+
+					"(a.GRADE = 'N4')) then 13 when (a.GRADE = 'W') then 14 when (a.GRADE = 'WWW') then 15 "+
+					"when (a.GRADE = 'AAA') then 16 else 17 end) as grade_order from "+
+					"academics.STUDENT_HISTORY a, academics.COURSE_TYPE_COMPONENT_MASTER b "+
+					"where a.STDNTSLGNDTLS_REGISTER_NUMBER in (?1) and (a.COURSE_CODE like 'EXC%' or "+
+					"a.CRSTYPCMPNTMASTER_COURSE_TYPE='ECA') and b.COMPONENT in (1,3) "+ 
+					"and a.CRSTYPCMPNTMASTER_COURSE_TYPE=b.COURSE_TYPE order by grade_order", nativeQuery=true)
+	List<Object[]> findECAStudentHistoryGrade(List<String> registerNumber);	
+	
+	@Query(value="select a.GRADE, a.COURSE_CATALOG_COURSE_ID, a.COURSE_CODE, a.CRSTYPCMPNTMASTER_COURSE_TYPE "+
+					"as GEN_COURSE_TYPE, to_char(a.EXAM_MONTH,'DD-MON-YYYY') as examMonth, "+
+					"(case when (a.GRADE = 'S') then 1 when (a.GRADE = 'U') then 2 when (a.GRADE = 'P') then 3 "+
+					"when (a.GRADE = 'Pass') then 4 when (a.GRADE = 'A') then 5 when (a.GRADE = 'B') then 6 "+
+					"when (a.GRADE = 'C') then 7 when (a.GRADE = 'D') then 8 when (a.GRADE = 'E') then 9 "+
+					"when (a.GRADE = 'R') then 10 when (a.GRADE = 'F') then 11 when (a.GRADE = 'Fail') then 12 "+
+					"when ((a.GRADE = 'N') or (a.GRADE = 'N1') or (a.GRADE = 'N2') or (a.GRADE = 'N3') or "+
+					"(a.GRADE = 'N4')) then 13 when (a.GRADE = 'W') then 14 when (a.GRADE = 'WWW') then 15 "+
+					"when (a.GRADE = 'AAA') then 16 else 17 end) as grade_order from "+
+					"academics.STUDENT_HISTORY a, academics.COURSE_TYPE_COMPONENT_MASTER b where "+
+					"a.STDNTSLGNDTLS_REGISTER_NUMBER in (?1) and (a.COURSE_CODE like 'EXC%' or "+
+					"a.CRSTYPCMPNTMASTER_COURSE_TYPE='ECA') and b.COMPONENT in (1,3) and "+ 
+					"a.CRSTYPCMPNTMASTER_COURSE_TYPE=b.COURSE_TYPE and (a.COURSE_CODE in "+
+					"(select EQUIVALENT_COURSE_CODE from academics.COURSE_EQUIVALANCES where COURSE_CODE=?2) "+
+					"or a.COURSE_CODE in (select COURSE_CODE from academics.COURSE_EQUIVALANCES where "+
+					"EQUIVALENT_COURSE_CODE=?2)) order by grade_order", nativeQuery=true)
+	List<Object[]> findECAStudentHistoryCEGrade(List<String> registerNumber, String courseCode);
+	
 	
 	/*@Query("select a from StudentHistoryModel a order by a.studentHistoryPKId.registerNumber, "+
 				"a.studentHistoryPKId.courseId, a.studentHistoryPKId.courseType desc")

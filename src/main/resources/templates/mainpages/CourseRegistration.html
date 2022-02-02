@@ -50,8 +50,8 @@
 												
 						<th:block th:if="${(courseOption=='RR') or (courseOption=='RRCE') or 
 											(courseOption=='GI') or (courseOption=='GICE') or 
-											(courseOption=='RGCE') or (courseOption=='RPCE') or 
-											(courseOption=='RWCE')}">
+											(courseOption=='RGCE') or (courseOption=='RPCE') or (courseOption=='RWCE') 
+											or ((courseOption == 'CS') and (courseCatalogModel.getGenericCourseType() == 'ECA'))}">
 							<input type="hidden" name="courseFlag" id="courseFlag" value="3"/> 
 							<input type="hidden" name="CourseOption" id="CourseOption" th:value="${courseOption}"/>						
 							<input type="hidden" name="subCourseOption" id="subCourseOption" th:value="${subCourseOption}"/>
@@ -120,15 +120,17 @@
 									<div th:if="${(courseCatalogModel.getGenericCourseType()=='TH')}" style="font-weight:bold; text-align: center; color: navajowhite;">Theory Slots</div>
 									<div th:if="${(courseCatalogModel.getGenericCourseType()=='LO')}" style="font-weight:bold; text-align: center; color: navajowhite;">Lab Slots</div>
 									<div th:if="${(courseCatalogModel.getGenericCourseType()=='SS')}" style="font-weight:bold; text-align: center; color: navajowhite;">Soft Skill Slots</div>
+									<div th:if="${(courseCatalogModel.getGenericCourseType()=='ECA')}" style="font-weight:bold; text-align: center; color: navajowhite;">Extra Curricular Activity</div>
 								</td>
 							</tr>
 								
 							<th:block th:if="${not #lists.isEmpty(cam)}">
 								<tr th:each="courseAllocationModells : ${cam}" 
-									th:if="${courseAllocationModells.getCourseTypeComponentModel().getCourseType() == 'ETH' 
-										 	or courseAllocationModells.getCourseTypeComponentModel().getCourseType() == 'TH' 
-										 	or courseAllocationModells.getCourseTypeComponentModel().getCourseType() == 'SS'
-										 	or courseAllocationModells.getCourseTypeComponentModel().getCourseType() == 'LO'}" >
+									th:if="${(courseAllocationModells.getCourseTypeComponentModel().getCourseType() == 'ETH') 
+										 	or (courseAllocationModells.getCourseTypeComponentModel().getCourseType() == 'TH') 
+										 	or (courseAllocationModells.getCourseTypeComponentModel().getCourseType() == 'SS')
+										 	or (courseAllocationModells.getCourseTypeComponentModel().getCourseType() == 'LO') 
+										 	or (courseAllocationModells.getCourseTypeComponentModel().getCourseType() == 'ECA')}" >
 										 
 									<td style="text-align: center; border:1px solid #095988;"  
 											th:text="${courseAllocationModells.getTimeTableModel().getSlotName()}"></td>									
@@ -398,7 +400,8 @@
 											 	</th:block>
 											 
 											 <!-- Course Substitution -->
-											 <th:block th:if="${(cOL[0]=='CS') and (not #lists.isEmpty(shcssList)) and (csAllowFlag==1)}">
+											 <th:block th:if="${(courseCatalogModel.getGenericCourseType() != 'ECA') and (cOL[0]=='CS') 
+											 				and (not #lists.isEmpty(shcssList)) and (csAllowFlag==1)}">
 											 	<div class="left-sec" style="width:33%!important;">
 										 			<input class="radio-btn" type="radio" name="CourseOption" 
 										 				id="CourseOption" th:value="${cOL[0]}" onclick="enablecourseOption();"
@@ -415,6 +418,16 @@
 												 	</select>
 											 	</div>
 												<br/>										 	
+											</th:block>
+											
+											<th:block th:if="${(courseCatalogModel.getGenericCourseType() == 'ECA') and (cOL[0]=='CS') 
+											 				and (csAllowFlag==1)}">
+											 	<input type="hidden" name="courseFlag" id="courseFlag" th:value="${cOL[2]}"/>
+												<input type="hidden" name="CourseOption" id="CourseOption" th:value="${courseOption}" /><br/>										
+												<input type="hidden" name="subCourseOption" id="subCourseOption" th:value="${subCourseOption}" /><br/>	
+												<label style="color:red; font-size:20px; line-height: 45px; height: 85px; display: inline-block; 
+													text-indent: 30px;" th:text="${'This is your '+cOL[1]+' course'}">
+												</label>
 											</th:block>
 									 	</p>
 									 </th:block>

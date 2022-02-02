@@ -333,7 +333,6 @@ public class StudentHistoryService
 	}
 	
 	
-	
 	//***************************************
 	//Examinations Result & Graduation Check
 	//***************************************
@@ -427,6 +426,25 @@ public class StudentHistoryService
 		}
 		
 		return gradePoint;
+	}
+
+	
+	
+	//Extra Curricular Activity
+	//-------------------------
+	public List<Object[]> getECAStudentHistoryByEligibleGrade(List<String> registerNumber)
+	{
+		return studentHistoryRepository.findECAStudentHistoryByEligibleGrade(registerNumber);
+	}
+	
+	public List<Object[]> getECAStudentHistoryGrade(List<String> registerNumber)
+	{
+		return studentHistoryRepository.findECAStudentHistoryGrade(registerNumber);
+	}
+	
+	public List<Object[]> getECAStudentHistoryCEGrade(List<String> registerNumber, String courseCode)
+	{
+		return studentHistoryRepository.findECAStudentHistoryCEGrade(registerNumber, courseCode);
 	}
 	
 	

@@ -74,30 +74,30 @@ public class CourseRegistrationCommonFunction
 		int regAllowFlag = 2, wlAllowFlag = 2, audAllowFlag = 2, rgrAllowFlag = 2, minAllowFlag = 2, 
 				honAllowFlag = 2, adlAllowFlag = 2, RPEUEAllowFlag = 2, csAllowFlag = 2, RUCUEAllowFlag = 2, 
 				rgrOptionFlag = 2, allCompAllowFlag = 1, rrAllowFlag = 1;
-		int courseMehtodType = 1, crTpCount = 0, subCrCount = 0, wlCount = 0;
+		int courseMehtodType = 1, crTpCount = 0, subCrCount = 0, regCount = 0;
 		int regularAllowStatus = 2, NGradeAllowStatus= 2, eoAllowStatus = 2, peAdlAllowStatus = 2;
 				
 		int flag = 2, flag2 = 2, flag3 = 2, flag4 = 2, flag5 = 2;
 		int flag6 = 2, flag7 = 2, flag8 = 2, flag9 = 2, flag10 = 2;
 		//int courseCredit = 0, lectureCredit = 0, practicalCredit = 0, projectCredit = 0 obtCredit = 0, 
 		//		rmgCredit = 0, ueRmgCredit = 0, ccCredit = 0, ctgCredit = 0, bskObtCredit = 0, honEarnCredit = 0, 
-		//		regCredit = 0, wlCredit = 0, totalRegCredit = 0, honCompCount = 0;
+		//		regCredit = 0, wlCredit = 0, totalRegCredit = 0, honCompCount = 0, wlCount = 0;
 		
-		Integer courseProgId = 0, audCount = 0, adlCount = 0, giCount = 0;
-		//Integer studentSemester = 0, totCdtReg = 0, totCdtEarn = 0;
+		Integer courseProgId = 0, audCount = 0, adlCount = 0;
+		//Integer studentSemester = 0, totCdtReg = 0, totCdtEarn = 0, giCount = 0;
 		
-		float courseCredit = 0, lectureCredit = 0, practicalCredit = 0, projectCredit = 0, obtCredit = 0, rmgCredit = 0, 
-				ueRmgCredit = 0, totCdtReg = 0, totCdtEarn = 0, ccCredit = 0, ctgCredit = 0, bskObtCredit = 0, 
-				regCredit = 0, wlCredit = 0, totalRegCredit = 0;
+		float courseCredit = 0, obtCredit = 0, rmgCredit = 0, ueRmgCredit = 0, totCdtReg = 0, totCdtEarn = 0, 
+				ccCredit = 0, ctgCredit = 0, bskObtCredit = 0;
 		Float cgpa = 0F;
-		//float honEarnCredit = 0;
+		//float honEarnCredit = 0, lectureCredit = 0, practicalCredit = 0, projectCredit = 0, regCredit = 0, 
+		//			wlCredit = 0, totalRegCredit = 0;
 				
 		String courseOption = "RGR", courseType = "NONE", subCourseOption = "NONE",	subCourseType = "NONE", 
 					subCourseDate = "NONE";
 		String courseCode = "", ccCourseSystem = "", ceCourseId = "NIL", compCourseStatus = "NONE";
 		String genericCoursetype = "", evaluationType = "", courseAltProgId = "", prerequisite = "NONE";
 		String grade = "", msg = "", subCrType = "", cgpaProgGroupId = "";
-		String historyCourseId = "", historyGenericCourseType = "", historyExamMonth = "", 
+		String historyCourseId = "", historyCourseCode = "", historyGenericCourseType = "", historyExamMonth = "", 
 					historyCourseSystem = "", authKeyVal = "NONE";
 		String courseCategory = "NONE", ccCourseId = "NONE", catalogType = "NONE", basketCategory = "NONE";
 		
@@ -117,7 +117,6 @@ public class CourseRegistrationCommonFunction
 		List<String> ceCourseList = new ArrayList<String>();
 		List<String> ceList = new ArrayList<String>();
 		List<String> spsRegList = new ArrayList<String>();
-		List<String> ncCourseList = new ArrayList<String>();
 		//List<String> englishCourseList = new ArrayList<String>();
 				
 		List<Object[]> shmList2 = new ArrayList<Object[]>();
@@ -178,9 +177,9 @@ public class CourseRegistrationCommonFunction
 					genericCoursetype = ccm.getGenericCourseType();
 					ccCourseSystem = ccm.getCourseSystem();
 					evaluationType = ccm.getEvaluationType();
-					lectureCredit = ccm.getLectureCredits();
-					practicalCredit = ccm.getPracticalCredits();
-					projectCredit = ccm.getProjectCredits();
+					//lectureCredit = ccm.getLectureCredits();
+					//practicalCredit = ccm.getPracticalCredits();
+					//projectCredit = ccm.getProjectCredits();
 					courseCredit = ccm.getCredits();
 					
 					if ((ccm.getPrerequisite() != null) && (!ccm.getPrerequisite().equals("")))
@@ -242,22 +241,7 @@ public class CourseRegistrationCommonFunction
 						allCompAllowFlag = 2;
 					}
 										
-					flag = 1;
-					
-					//To check whether selected course is restricted English course under UE Category
-					/*if (flag == 1)
-					{
-						if ((pStudentStartYear <= 2018) && courseCategory.equals("UE") && englishCourseList.contains(courseCode))
-						{
-							flag = 2;
-							msg = "Selected course "+ courseCode +" is not allowed for registration under "
-									+ courseCategory +" courseCategory.";
-						}
-						else
-						{
-							flag = 1;
-						}
-					}*/
+					flag = 1;					
 				}
 				else
 				{
@@ -265,7 +249,9 @@ public class CourseRegistrationCommonFunction
 				}
 				
 				if (flag == 1)
-				{					
+				{	
+					flag = 2;
+					
 					if ((pProgramGroupCode.equals("RP")) || (pProgramGroupCode.equals("IEP")))
 					{
 						flag = 1;
@@ -290,9 +276,21 @@ public class CourseRegistrationCommonFunction
 						}
 						else
 						{
-							flag = 2;
 							msg = "Only PC and UC category courses are allowed for registration.";
 						}
+					}
+				}
+				
+				if (flag == 1)
+				{
+					flag = 2;
+					if (genericCoursetype.equals("ECA"))
+					{
+						flag = 1;
+					}
+					else
+					{
+						msg = "Only Extra Curricular Activity courses are allowed for registration.";
 					}
 				}
 			}
@@ -305,8 +303,8 @@ public class CourseRegistrationCommonFunction
 			if (flag == 1)
 			{
 				psRegList.clear();
-				psRegList = courseRegistrationService.getRegistrationAndWLByRegisterNumberAndCourseCode(pSemesterSubId, 
-								pRegisterNumber, courseCode);
+				psRegList = courseRegistrationService.getRegistrationAndWLByRegisterNumberAndGenericCourseType(pSemesterSubId, 
+								pRegisterNumber, genericCoursetype);
 				if (psRegList.isEmpty())
 				{
 					flag2 = 1;
@@ -315,18 +313,18 @@ public class CourseRegistrationCommonFunction
 				{
 					for (Object[] e: psRegList)
 					{
-						msg = (e[0].toString().equals("WL"))?"Selected course is already registered in Waiting List." 
-								: "Selected course is already registered."; 
+						msg = (e[0].toString().equals("WL"))?"You already registered one of the extra curricular "+
+								"course in Waiting List.":"You already registered one of the extra curricular course."; 
 						break;
 					}
+				}
+				
+				if (flag2 == 1)
+				{
 					flag2 = 2;
-				}
-				
-				if (flag2 == 1)
-				{
 					psRegList.clear();
-					psRegList = courseRegistrationService.getCERegistrationAndWLByRegisterNumberAndCourseCode(pSemesterSubId, 
-									pRegisterNumber, courseCode);
+					psRegList = courseRegistrationService.getCERegistrationAndWLByRegisterNumberCourseCodeAndGenCourseType(
+									pSemesterSubId, pRegisterNumber, courseCode, genericCoursetype);
 					if (psRegList.isEmpty())
 					{
 						flag2 = 1;
@@ -335,21 +333,20 @@ public class CourseRegistrationCommonFunction
 					{
 						for (Object[] e: psRegList)
 						{
-							msg = (e[0].toString().equals("WL"))?"Selected course is already registered in Waiting List "
-									+"under course equivalance ("+ e[1].toString() +" - "+ e[2].toString() +")." 
-									: "Selected course is already registered under course equivalance ("+ e[1].toString() 
-									+" - "+ e[2].toString() +").";  
+							msg = (e[0].toString().equals("WL"))?"You already registered one of the extra curricular "+
+									"course in Waiting List under course equivalance ("+ e[1].toString() +" - "+ 
+									e[2].toString() +").":"You already registered one of the extra curricular course "+
+									"under course equivalance ("+ e[1].toString() +" - "+ e[2].toString() +").";  
 							break;
 						}
-						flag2 = 2;
 					}
 				}
-				
+
 				if (flag2 == 1)
 				{
+					flag2 = 2;
 					psRegList.clear();
-					psRegList = courseRegistrationService.getPrevSemCourseRegistrationByRegisterNumber3(registerNumber2, 
-										courseCode);
+					psRegList = courseRegistrationService.getECAPrevSemCourseRegistrationByRegisterNumber(registerNumber2);
 					if (psRegList.isEmpty())
 					{
 						flag2 = 1;
@@ -358,18 +355,18 @@ public class CourseRegistrationCommonFunction
 					{
 						for (Object[] e: psRegList)
 						{
-							msg = "You already registered this course in "+ e[1].toString() +" and the result not yet declared.  "
-									+"Not allowed to register."; 
+							msg = "You already registered the course "+ e[4].toString() +" in "+ e[1].toString() +" and "+
+									"the result not yet declared.  Not allowed to register."; 
 							break;
 						}
-						flag2 = 2;
 					}
 				}
 								
 				if (flag2 == 1)
 				{
+					flag2 = 2;
 					psRegList.clear();
-					psRegList = courseRegistrationService.getPrevSemCourseRegistrationCEByRegisterNumber3(registerNumber2, 
+					psRegList = courseRegistrationService.getECAPrevSemCourseRegistrationCEByRegisterNumber(registerNumber2, 
 									courseCode);
 					if (psRegList.isEmpty())
 					{
@@ -379,58 +376,16 @@ public class CourseRegistrationCommonFunction
 					{
 						for (Object[] e: psRegList)
 						{
-							msg = "You already registered this course in "+ e[1].toString() +" under course equivalance and "
-									+"the result not yet declared.  Not allowed to register."; 
+							msg = "You already registered this course in "+ e[1].toString() +" under course equivalance and "+
+									"the result not yet declared.  Not allowed to register."; 
 							break;
 						}
-						flag2 = 2;
 					}
 				}
 				
 				if (flag2 == 1)
 				{
-					psRegList.clear();
-					psRegList = studentHistoryService.getArrearRegistrationByRegisterNumberAndCourseCode3(registerNumber2, 
-									courseCode);
-					if (psRegList.isEmpty())
-					{
-						flag2 = 1;
-					}
-					else
-					{
-						for (Object[] e: psRegList)
-						{
-							msg = "You already registered this Course in "+ e[1].toString() +" "+ e[2].toString() 
-									+".  Not allowed to register."; 
-							break;
-						}
-						flag2 = 2;
-					}
-				}
-				
-				if (flag2 == 1)
-				{
-					psRegList.clear();
-					psRegList = studentHistoryService.getArrearCERegistrationByRegisterNumberAndCourseCode3(registerNumber2, 
-									courseCode);
-					if (psRegList.isEmpty())
-					{
-						flag2 = 1;
-					}
-					else
-					{
-						for (Object[] e: psRegList)
-						{
-							msg = "You already registered this Course in "+ e[1].toString() +" "+ e[2].toString() 
-									+" under Course Equivalence.  Not allowed to register."; 
-							break;
-						}
-						flag2 = 2;
-					}
-				}
-				
-				if (flag2 == 1)
-				{
+					flag2 = 2;
 					psRegList.clear();
 					psRegList = studentHistoryService.getCourseChangeHistoryByRegisterNumberAndCourseCode2(registerNumber2, 
 										courseCode);
@@ -442,12 +397,12 @@ public class CourseRegistrationCommonFunction
 					{
 						msg = "You already substituted this course with other course.  Not allowed to register.  "
 								+"Kindly check your grade history.";
-						flag2 = 2;
 					}
 				}
 				
 				if (flag2 == 1)
 				{
+					flag2 = 2;
 					psRegList.clear();
 					psRegList = courseEquivalanceRegService.getByRegisterNumberAndCourseCode(pSemesterSubId, registerNumber2, 
 									Arrays.asList("CS", "CSUPE"), courseCode);
@@ -463,7 +418,6 @@ public class CourseRegistrationCommonFunction
 									+"Not allowed to register.  Kindly check your Course Registration.";
 							break;
 						}
-						flag2 = 2;
 					}
 				}
 			}
@@ -475,13 +429,14 @@ public class CourseRegistrationCommonFunction
 				courseMehtodType = 1;
 				shmList2.clear();
 								
-				shmList2 = studentHistoryService.getStudentHistoryGrade2(registerNumber2, courseCode);
+				shmList2 = studentHistoryService.getECAStudentHistoryGrade(registerNumber2);
 				if (!shmList2.isEmpty())
 				{
 					for (Object[] e: shmList2)
 					{
 						grade = e[0].toString();
 						historyCourseId = e[1].toString();
+						historyCourseCode = e[2].toString();
 						historyGenericCourseType = e[3].toString();
 						historyExamMonth = e[4].toString();
 						break;
@@ -505,13 +460,14 @@ public class CourseRegistrationCommonFunction
 				if (historyflag == 2)
 				{
 					shmList2.clear();
-					shmList2 = studentHistoryService.getStudentHistoryCEGrade3(registerNumber2, courseCode);
+					shmList2 = studentHistoryService.getECAStudentHistoryCEGrade(registerNumber2, courseCode);
 					if (!shmList2.isEmpty())
 					{
 						for (Object[] e: shmList2)
 						{
 							grade = e[0].toString();
 							historyCourseId = e[1].toString();
+							historyCourseCode = e[2].toString();
 							historyGenericCourseType = e[3].toString();
 							historyExamMonth = e[4].toString();
 							break;
@@ -545,6 +501,7 @@ public class CourseRegistrationCommonFunction
 							grade = "W";
 							courseMehtodType = Integer.parseInt(e[0].toString());
 							historyCourseId = e[1].toString();
+							historyCourseCode = e[2].toString();
 							historyGenericCourseType = e[3].toString();
 							historyExamMonth = e[4].toString();
 							break;
@@ -564,6 +521,7 @@ public class CourseRegistrationCommonFunction
 							grade = "CL";
 							courseMehtodType = Integer.parseInt(e[0].toString());
 							historyCourseId = e[1].toString();
+							historyCourseCode = e[2].toString();
 							historyGenericCourseType = e[3].toString();
 							historyExamMonth = e[4].toString();
 							break;
@@ -583,42 +541,9 @@ public class CourseRegistrationCommonFunction
 					else if ((grade.equals("A")) || (grade.equals("B")) || (grade.equals("C")) 
 								|| (grade.equals("D"))	|| (grade.equals("E")))
 					{						
-						if (eoAllowStatus == 1)
-						{
-							//if (historyGenericCourseType.equals(genericCoursetype))
-							//{
-								if (pStudentGraduateYear <= academicGraduateYear)
-								{
-									courseOption = (courseMehtodType == 2) ? "GICE" : "GI";
-									flag3 = 1;
-								}
-								else
-								{
-									giCount = courseRegistrationService.getGICourseCountByRegisterNumberCourseOptionAndClassGroup(
-													pSemesterSubId, pRegisterNumber, classGroupId);
-									if (giCount == 0)
-									{
-										courseOption = (courseMehtodType == 2) ? "GICE" : "GI";
-										flag3 = 1;
-									}
-									else
-									{
-										flag3 = 2;
-										msg = "Only one grade improvement course is allowed.";
-									}
-								}
-							//}
-							//else
-							//{
-							//	msg = "Grade improvement will be permitted only all course components are equal. "
-							//			+"Your previous studied course component is "+ historyGenericCourseType 
-							//			+" and selected course component is "+ genericCoursetype +".";
-							//}
-						}
-						else
-						{
-							msg = "Grade improvement courses are not allowed to register.";
-						}
+						msg = (courseMehtodType == 2)?"You already studied ECA course under equivalance and "+
+								"obtained the "+ grade +" grade.":"You already studied ECA course and obtained "+
+								"the "+ grade +" grade.";
 					}
 					else if ((grade.equals("F")) || (grade.equals("Fail")))
 					{
@@ -695,6 +620,12 @@ public class CourseRegistrationCommonFunction
 								
 				if (flag3 == 1)
 				{
+					if ((historyflag == 1) && (courseOption.equals("RR") || courseOption.equals("RRCE")) 
+							&& (!historyCourseCode.equals(courseCode)))
+					{
+						courseOption = "CS";
+					}
+						
 					if ((!pProgramGroupCode.equals("IEP")) && (studStudySystem.equals("FFCS")) 
 							&& (ccCourseSystem.equals("CAL")) && (courseOption.equals("RGCE") 
 									|| courseOption.equals("RWCE") || courseOption.equals("RPCE")))
@@ -980,14 +911,7 @@ public class CourseRegistrationCommonFunction
 			// To check the credit limit
 			if (flag4 == 1)
 			{					
-				ncCourseList = programmeSpecializationCurriculumDetailService.getNCCourseByYearAndCCVersion(pProgramSpecId, 
-									pStudentStartYear, pCurriculumVersion);
-				regCredit = courseRegistrationService.getRegCreditByRegisterNumberAndNCCourseCode(pSemesterSubId, pRegisterNumber, 
-								ncCourseList);
-				wlCredit = courseRegistrationWaitingService.getRegCreditByRegisterNumberAndNCCourseCode(pSemesterSubId, 
-								pRegisterNumber, ncCourseList);
-				wlCount = courseRegistrationWaitingService.getRegisterNumberCRWCount(pSemesterSubId, pRegisterNumber);
-				totalRegCredit = regCredit + wlCredit;
+				regCount = courseRegistrationService.getECACourseCountByRegisterNumber(pSemesterSubId, pRegisterNumber);
 				
 				if (courseTypeList.size() > 0)
 				{
@@ -1001,65 +925,30 @@ public class CourseRegistrationCommonFunction
 						{
 							courseType = courseType +","+ courseType3;
 						}
-						
-						if (courseType3.equals("ETH"))
-						{
-							totalRegCredit = totalRegCredit + lectureCredit;
-						}
-						else if (courseType3.equals("ELA"))
-						{
-							totalRegCredit = totalRegCredit + practicalCredit;
-						}
-						else if (courseType3.equals("EPJ"))
-						{
-							totalRegCredit = totalRegCredit + projectCredit;
-						}
-						else
-						{
-							totalRegCredit = totalRegCredit + courseCredit;
-						}
-						
+												
 						crTpCount++;
+					}
+				}
+				
+				if (regCount <= 0)
+				{
+					flag5 = 1;
+					regAllowFlag = 1;
+					
+					if (waitingListStatus == 1)
+					{
+						wlAllowFlag = 1;
 					}
 				}
 				else
 				{
-					totalRegCredit = totalRegCredit + courseCredit;
+					msg = "You cannot register more than one extra curricular course.";
 				}
-				
-				//regAllowFlag = 1;
-				if ((pStudentGraduateYear <= academicGraduateYear) && (maxCredit == 30) && (totalRegCredit <= 32))
-				{
-					regAllowFlag = 1;
-				}
-				else if (totalRegCredit <= maxCredit)
-				{
-					regAllowFlag = 1;
-				}
-				
-				if ((waitingListStatus == 1) && (!studCompulsoryCourse.contains(courseCode)) && (wlCount < 2))
-				{
-					wlAllowFlag = 1;
-				}
-				
-				if ((!pProgramGroupCode.equals("RP")) && (!pProgramGroupCode.equals("MBA")) 
-						&& (!pProgramGroupCode.equals("MBA5")) && (pStudentGraduateYear <= academicGraduateYear) 
-						&& (maxCredit == 30) && ((regCredit + wlCredit) < 30) && (totalRegCredit <= 32))
-				{
-					flag5 = 1;
-				}
-				else if (totalRegCredit <= maxCredit)
-				{
-					flag5 = 1;
-				}
-				else
-				{
-					flag5 = 2;
-					msg = "You cannot register more than "+ maxCredit +" credits.";
-				}
-				
+								
 				if (flag5 == 1)
 				{
+					flag5 = 2;
+					
 					if (courseOption.equals("RGR") || courseOption.equals("RGP") || courseOption.equals("RGCE") 
 							|| courseOption.equals("RGA") || courseOption.equals("RPCE") || courseOption.equals("HON") 
 							|| courseOption.equals("MIN") || courseOption.equals("AUD") || courseOption.equals("RGW") 
@@ -1068,8 +957,7 @@ public class CourseRegistrationCommonFunction
 							|| courseOption.equals("RGVC"))
 					{	
 						rgrOptionFlag = 1;
-						flag5 = 2;
-						
+											
 						if (regularAllowStatus == 1)
 						{
 							flag5 = 1;
@@ -1511,7 +1399,24 @@ public class CourseRegistrationCommonFunction
 						+" | studStudySystem: "+ studStudySystem +" | courseOption: "+ courseOption 
 						+" | courseCategory: "+ courseCategory);*/
 				
-				if (rgrOptionFlag == 1)
+				if (genericCoursetype.equals("ECA"))
+				{
+					if (rgrOptionFlag == 1)
+					{					
+						rgrAllowFlag = 1;
+						flag10 = 1;
+					}
+					else if (courseOption.equals("CS"))
+					{
+						csAllowFlag = 1;
+						flag10 = 1;
+					}
+					else
+					{
+						msg = "Invalid course option.";
+					}
+				}
+				else if ((!genericCoursetype.equals("ECA")) && (rgrOptionFlag == 1))
 				{					
 					if ((eoAllowStatus == 1) && (cgpa >= 8))
 					{
@@ -1910,10 +1815,11 @@ public class CourseRegistrationCommonFunction
 					&& (flag6 == 1) && (flag7 == 1) && (flag8 == 1) && (flag9 == 1) && (flag10 == 1))
 			{					
 				//To assign the course equivalence registration detail value
-				if ((courseOption.equals("RR")) || (courseOption.equals("RRCE")) 
-						|| (courseOption.equals("GI")) || (courseOption.equals("GICE")) 
-						|| (courseOption.equals("RGCE")) || (courseOption.equals("RWCE")) 
-						|| (courseOption.equals("RPCE")))
+				if (courseOption.equals("RR") || courseOption.equals("RRCE") 
+						|| courseOption.equals("GI") || courseOption.equals("GICE") 
+						|| courseOption.equals("RGCE") || courseOption.equals("RWCE") 
+						|| courseOption.equals("RPCE") 
+						|| (courseOption.equals("CS") && genericCoursetype.equals("ECA")))
 				{ 
 					subCourseOption = historyCourseId;
 					subCourseDate = historyExamMonth;
@@ -2780,7 +2686,7 @@ public class CourseRegistrationCommonFunction
 		int checkFlag = 2, checkFlag2 = 2, checkFlag3 = 2, checkFlag4 = 2;
 		
 		String message = "", authKeyValue = "NONE";
-		String courseCode = "", courseTitle = "", courseCategory = "NONE", courseOption = "NONE";
+		String courseCode = "", courseTitle = "", courseCategory = "NONE", courseOption = "NONE", genericCourseType = "";
 		
 		CourseCatalogModel ccm = new CourseCatalogModel();
 		List<Object[]> psRegList = new ArrayList<Object[]>();
@@ -2796,6 +2702,7 @@ public class CourseRegistrationCommonFunction
 				{
 					courseCode = ccm.getCode();
 					courseTitle = ccm.getTitle();
+					genericCourseType = ccm.getGenericCourseType();
 														
 					//To get course category from curriculum
 					if (pCurriculumVersion > 0)
@@ -2902,9 +2809,13 @@ public class CourseRegistrationCommonFunction
 			//(i.e. RPEUE/ RUCPE/ MINOR/ HONOUR) in same category
 			if (checkFlag3 == 1)
 			{
-				if (courseCategory.equals("UC") || courseCategory.equals("PE") 
-						|| courseCategory.equals("UE") || courseCategory.equals("BC") 
-						|| courseCategory.equals("NC"))
+				if (genericCourseType.equals("ECA"))
+				{
+					checkFlag4 = 1;
+				}
+				else if (courseCategory.equals("UC") || courseCategory.equals("PE") 
+							|| courseCategory.equals("UE") || courseCategory.equals("BC") 
+							|| courseCategory.equals("NC"))
 				{
 					if (courseOption.equals("RGR") || courseOption.equals("RGCE") 
 								|| courseOption.equals("RGP") || courseOption.equals("RGW") 
@@ -3489,8 +3400,8 @@ public class CourseRegistrationCommonFunction
 		{
 			regularCourseStatus = 1;
 			NGradeCourseStatus = 1;
-			eoStatus = 1;
-			peAdlStatus = 1;
+			//eoStatus = 1;
+			//peAdlStatus = 1;
 		}
 		
 		if (statusType == 1)

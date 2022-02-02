@@ -294,25 +294,11 @@ public class CourseRegistrationPageController
 						Model model) throws ServletException, IOException 
 	{
 		String page = "", info = null, pageAuthKey = "";
-		String currentDateTimeStr = "",logoutMsg="";
 		String registerNumber = (String) session.getAttribute("RegisterNumber");
-		int studyStartYear = (int) session.getAttribute("StudyStartYear");
-		int loAllowFlag = 2, pageAuthStatus = 2;
-		int regCredit=0, wlRegCredit=0;
-		int totalRegCredit=0;
-		Integer StudentGraduateYear = (Integer) session.getAttribute("StudentGraduateYear");
-		Integer academicGraduateYear = (Integer) session.getAttribute("acadGraduateYear");
-		String ProgramGroupCode = (String) session.getAttribute("ProgramGroupCode");
-		Integer programSpecId = (Integer) session.getAttribute("ProgramSpecId");
-		String SemesterSubId = (String) session.getAttribute("SemesterSubId");
-		Integer minCredit = (Integer) session.getAttribute("minCredit");
-		Integer maxCredit = (Integer) session.getAttribute("maxCredit");
+		int pageAuthStatus = 2;
 		String IpAddress=(String) session.getAttribute("IpAddress");
-		Float curriculumVersion = (Float) session.getAttribute("curriculumVersion");
-		List<String> ncCourseList = new ArrayList<String>();
 		pageAuthKey = (String) session.getAttribute("pageAuthKey");
 		pageAuthStatus = courseRegCommonFn.validatePageAuthKey(pageAuthKey, registerNumber, 2);
-		Integer PEUEAllowStatus = (Integer) session.getAttribute("PEUEAllowStatus");
 		
 		try 
 		{
@@ -320,55 +306,9 @@ public class CourseRegistrationPageController
 			{
 				info = (String) session.getAttribute("info");
 				
-				//loAllowFlag = 1;
-				if (ProgramGroupCode.equals("RP") || ProgramGroupCode.equals("IEP"))
-				{
-					loAllowFlag = 1;
-				}
-				else if (StudentGraduateYear <= academicGraduateYear)
-				{
-					loAllowFlag = 1;
-				}
-				else if (PEUEAllowStatus == 1)
-				{
-					ncCourseList = programmeSpecializationCurriculumDetailService.getNCCourseByYearAndCCVersion(programSpecId, 
-										studyStartYear, curriculumVersion);
-					regCredit = courseRegistrationService.getRegCreditByRegisterNumberAndNCCourseCode(SemesterSubId, registerNumber, 
-									ncCourseList);
-					wlRegCredit = courseRegistrationWaitingService.getRegCreditByRegisterNumberAndNCCourseCode(SemesterSubId, 
-										registerNumber, ncCourseList);
-					totalRegCredit = regCredit + wlRegCredit;
-					
-					//Minimum Credit Check	
-					if (totalRegCredit >= minCredit)
-					{
-						loAllowFlag = 1;
-					}
-				}
-				else
-				{
-					loAllowFlag = 1;
-				}
-								
-				if (loAllowFlag == 1) 
-				{
-					registrationLogService.UpdateLogoutTimeStamp(IpAddress,registerNumber);
-					model.addAttribute("flag", 4);			
-					page = "redirectpage";
-				}
-				else
-				{
-					currentDateTimeStr = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a").format(new Date());
-					logoutMsg="Minimum of "+minCredit+" credits needed for 'Sign Out'.";
-					model.addAttribute("CurrentDateTime", currentDateTimeStr);
-					model.addAttribute("regCredit", regCredit);
-					model.addAttribute("wlCredit", wlRegCredit);
-					model.addAttribute("maxCredit", maxCredit);
-					model.addAttribute("studentDetails", session.getAttribute("studentDetails"));
-					model.addAttribute("logoutMsg", logoutMsg);
-					
-					return "mainpages/MainPage";
-				}
+				registrationLogService.UpdateLogoutTimeStamp(IpAddress,registerNumber);
+				model.addAttribute("flag", 4);			
+				page = "redirectpage";
 			}
 			else
 			{
@@ -407,39 +347,25 @@ public class CourseRegistrationPageController
 		//int studyStartYear = (int) session.getAttribute("StudyStartYear");
 		//Integer programSpecId = (Integer) session.getAttribute("ProgramSpecId");
 		//Float curriculumVersion = (Float) session.getAttribute("curriculumVersion");
-		List<String> ncCourseList = new ArrayList<String>();
 		
 		String urlPage = "";
-		Integer wlCredit = 0, regCredit = 0, regCount = 0, wlCount = 0;
+		Integer regCount = 0, wlCount = 0;
 		String IpAddress=(String) session.getAttribute("IpAddress");
-		Integer minCredit = (Integer) session.getAttribute("minCredit");
-		Integer maxCredit = (Integer) session.getAttribute("maxCredit");
 		try
 		{
 			if (registerNumber!=null)
 			{	
-				ncCourseList.add("NONE");
-				//ncCourseList = programmeSpecializationCurriculumDetailService.getNCCourseByYearAndCCVersion(programSpecId, 
-				//					studyStartYear, curriculumVersion);
-				regCredit = courseRegistrationService.getRegCreditByRegisterNumberAndNCCourseCode(semesterSubId, 
-								registerNumber, ncCourseList);
 				regCount = courseRegistrationService.getRegisterNumberTCCountByClassGroupId(semesterSubId, registerNumber, 
 								classGroupId);
 				
 				if (WaitingListStatus == 1)
 				{
-					wlCredit = courseRegistrationWaitingService.getRegCreditByRegisterNumberAndNCCourseCode(semesterSubId, 
-							registerNumber, ncCourseList);
 					wlCount = courseRegistrationWaitingService.getRegisterNumberCRWCountByClassGroupId(semesterSubId, 
 							registerNumber, classGroupId);
 				}
 				
-				model.addAttribute("regCredit", regCredit);
 				model.addAttribute("regCount", regCount);
 				model.addAttribute("wlCount", wlCount);
-				model.addAttribute("wlCredit", wlCredit);
-				model.addAttribute("minCredit", minCredit);
-				model.addAttribute("maxCredit", maxCredit);
 				model.addAttribute("WaitingListStatus", WaitingListStatus);
 				
 				urlPage = "mainpages/MainPage::creditsFragment";
@@ -555,6 +481,7 @@ public class CourseRegistrationPageController
 				Date endDate = (Date) session.getAttribute("endDate");
 				String startTime = (String) session.getAttribute("startTime");
 				String endTime = (String) session.getAttribute("endTime");
+				String[] classGroupId = session.getAttribute("classGroupId").toString().split("/");
 				
 				String returnVal = courseRegCommonFn.AddorDropDateTimeCheck(startDate, endDate, startTime, endTime, 
 										registerNumber, updateStatus, IpAddress);
@@ -571,7 +498,9 @@ public class CourseRegistrationPageController
 
 						if((semesterSubId !=null) &&(registerNumber !=null))
 						{
-							courseRegistrationModel = courseRegistrationService.getByRegisterNumber3(semesterSubId, registerNumber);
+							//courseRegistrationModel = courseRegistrationService.getByRegisterNumber3(semesterSubId, registerNumber);
+							courseRegistrationModel = courseRegistrationService.getByRegisterNumberAndClassGroup3(semesterSubId, 
+															registerNumber, classGroupId);
 						}
 						
 						if(!courseRegistrationModel.isEmpty())
@@ -588,7 +517,7 @@ public class CourseRegistrationPageController
 						}
 						
 						
-						if(WaitingListStatus==1)
+						if (WaitingListStatus==1)
 						{
 							courseRegistrationWaitingModel = courseRegistrationWaitingService.getWaitingCourseByRegNoWithRank(
 																			semesterSubId, registerNumber);

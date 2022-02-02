@@ -53,7 +53,7 @@ public class AppFilter implements Filter
             	}
             }
             
-        	if((uri.endsWith("adddrop/")) && pass.equals(1))
+        	if((uri.endsWith("eca/")) && pass.equals(1))
         	{        		
         		 if(isSessionCarryingOver(userSessionId,session.getId()))
         		 {
@@ -149,7 +149,7 @@ public class AppFilter implements Filter
 	
 	private boolean isFirstCall(String uri) 
 	{
-		return (uri.equals("/") || uri.contains("adddrop") || uri.contains("processStudentLogin"));
+		return (uri.equals("/") || uri.contains("eca") || uri.contains("processStudentLogin"));
 	}
 	
 	private boolean isSessionCarryingOver(String userSessionId,String currentId) 

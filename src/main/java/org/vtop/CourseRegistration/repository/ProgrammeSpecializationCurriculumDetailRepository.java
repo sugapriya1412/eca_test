@@ -96,6 +96,26 @@ public interface ProgrammeSpecializationCurriculumDetailRepository extends
 	List<Object[]> findStudentCurriculumByRegisterNumberUECourseAndPECourseOption(Integer specializationId, Integer admissionYear, 
 						Float curriculumVersion, List<String> registerNumber, List<String> ueCourseCode, List<String> peCourseOptionCode);
 	
+	@Query(value="select a.COURSE_CATEGORY, a.CATALOG_TYPE, a.COURSE_BASKET_ID, a.COURSE_ID, a.CODE, a.BASKET_CATEGORY, "+
+					"a.CREDITS from "+
+					"((select a.COURSE_CATEGORY, a.CATALOG_TYPE, a.COURSE_BASKET_ID, b.COURSE_ID, b.CODE, "+
+					"'NONE' as BASKET_CATEGORY, b.CREDITS from ACADEMICS.PRG_SPLZTN_CURRICULUM_DETAILS a, "+
+					"ACADEMICS.COURSE_CATALOG b where a.PRGSPLZN_PRG_SPECIALIZATION_ID=?1 and a.ADMISSION_YEAR=?2 "+
+					"and a.CURRICULUM_VERSION=?3 and a.CATALOG_TYPE='CC' and a.LOCK_STATUS=0 and "+
+					"a.COURSE_BASKET_ID=b.COURSE_ID and b.GENERIC_COURSE_TYPE in (?4)) "+
+					"union all "+
+					"(select a.COURSE_CATEGORY, a.CATALOG_TYPE, a.COURSE_BASKET_ID, c.COURSE_CATALOG_COURSE_ID "+
+					"as COURSE_ID, d.CODE, b.BASKET_CATEGORY, b.CREDITS from ACADEMICS.PRG_SPLZTN_CURRICULUM_DETAILS a, "+
+					"ACADEMICS.BASKET_DETAILS b, ACADEMICS.BASKET_COURSE_CATALOG c, ACADEMICS.COURSE_CATALOG d "+
+					"where a.PRGSPLZN_PRG_SPECIALIZATION_ID=?1 and a.ADMISSION_YEAR=?2 and a.CURRICULUM_VERSION=?3 "+
+					"and a.CATALOG_TYPE='BC' and a.LOCK_STATUS=0 and b.LOCK_STATUS=0 and c.LOCK_STATUS=0 and "+
+					"a.COURSE_BASKET_ID=b.BASKET_ID and a.COURSE_BASKET_ID=c.BASKET_DETAILS_BASKET_ID and "+
+					"b.BASKET_ID=c.BASKET_DETAILS_BASKET_ID and c.COURSE_CATALOG_COURSE_ID=d.COURSE_ID and "+
+					"d.GENERIC_COURSE_TYPE in (?4))) a order by a.COURSE_CATEGORY, a.CATALOG_TYPE, a.COURSE_ID", 
+					nativeQuery=true)
+	List<Object[]> findByAdmsnYearCCVersionAndGenericCourseType(Integer specializationId, Integer admissionYear, 
+						Float ccVersion, List<String> genericCourseType);
+
 	
 	/*@Query("select a from ProgrammeSpecializationCurriculumDetailModel a order by "+
 				"a.psccdPkId.specializationId, a.psccdPkId.admissionYear desc, a.psccdPkId.curriculumVersion, "+
