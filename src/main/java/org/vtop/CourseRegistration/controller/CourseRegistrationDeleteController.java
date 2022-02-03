@@ -32,7 +32,7 @@ public class CourseRegistrationDeleteController
 	@Autowired private CourseRegistrationWaitingService courseRegistrationWaitingService;
 	
 	//private static final Logger logger = LogManager.getLogger(CourseRegistrationDeleteController.class);
-	private static final String RegErrorMethod = "WS2122REG";
+	private static final String RegErrorMethod = "WSECAREG-2122";
 	
 	
 	@PostMapping("processDeleteCourseRegistration")

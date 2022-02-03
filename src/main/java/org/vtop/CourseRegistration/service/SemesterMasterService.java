@@ -394,7 +394,8 @@ public class SemesterMasterService
 				
 		if (genericCourseType.equals("TH") || genericCourseType.equals("LO") 
 				|| genericCourseType.equals("ETL") || genericCourseType.equals("ETP") 
-				|| genericCourseType.equals("ELP") || genericCourseType.equals("ETLP"))
+				|| genericCourseType.equals("ELP") || genericCourseType.equals("ETLP") 
+				|| genericCourseType.equals("ECA"))
 		{
 			if (auditStatus == 1)
 			{
@@ -434,8 +435,13 @@ public class SemesterMasterService
 			
 		if (!optionList.isEmpty())
 		{
-			optionList2 = Arrays.asList("GI", "GICE", "GIVC", "RR", "RRCE", "RRN", "RRVC");
-			optionList3 = Arrays.asList("RGR", "AUD", "DM", "RGCE", "RGVC", "RPEUE", "RUCUE");
+			optionList2.addAll(Arrays.asList("GI", "GICE", "GIVC", "RR", "RRCE", "RRN", "RRVC"));
+			if (genericCourseType.equals("ECA"))
+			{
+				optionList2.add("CS");
+			}
+				
+			optionList3.addAll(Arrays.asList("RGR", "AUD", "DM", "RGCE", "RGVC", "RPEUE", "RUCUE"));
 			
 			for (CourseOptionModel e : semesterMasterRepository.findByOptionCode(optionList))
 			{

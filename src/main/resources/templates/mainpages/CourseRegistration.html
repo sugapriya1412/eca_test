@@ -347,7 +347,9 @@
 							<tr style="background-color:  rgb(181,209,232);color: #360D20; text-shadow: aqua;">
 								<td colspan="2" valign="middle" style="width: 30%; vertical-align: middle; text-indent: 100px; font-weight: bold; font-size: 18px;border:1px solid #095988;">Course Option</td>
 								<td colspan="7" style="border:1px solid #095988; font-weight: bolder;">
-								 <div style="width:100%;float:left;padding-left:40px;" th:each="cOL:${courseOptionList}">
+								 
+								 	<div style="width:100%;float:left;padding-left:40px;" th:each="cOL : ${courseOptionList}">
+								 	
 								 	<th:block th:if="${cOL[2] == 1}">
 								 		<input type="hidden" name="courseFlag" id="courseFlag" th:value="${cOL[2]}"/>
 								 		<p class="radio-check">											 
@@ -419,17 +421,8 @@
 											 	</div>
 												<br/>										 	
 											</th:block>
-											
-											<th:block th:if="${(courseCatalogModel.getGenericCourseType() == 'ECA') and (cOL[0]=='CS') 
-											 				and (csAllowFlag==1)}">
-											 	<input type="hidden" name="courseFlag" id="courseFlag" th:value="${cOL[2]}"/>
-												<input type="hidden" name="CourseOption" id="CourseOption" th:value="${courseOption}" /><br/>										
-												<input type="hidden" name="subCourseOption" id="subCourseOption" th:value="${subCourseOption}" /><br/>	
-												<label style="color:red; font-size:20px; line-height: 45px; height: 85px; display: inline-block; 
-													text-indent: 30px;" th:text="${'This is your '+cOL[1]+' course'}">
-												</label>
-											</th:block>
 									 	</p>
+										
 									 </th:block>
 									 
 									 <th:block th:if="${cOL[2] == 2}">

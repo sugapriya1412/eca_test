@@ -1399,7 +1399,7 @@ public class CourseRegistrationCommonFunction
 						+" | studStudySystem: "+ studStudySystem +" | courseOption: "+ courseOption 
 						+" | courseCategory: "+ courseCategory);*/
 				
-				if (genericCoursetype.equals("ECA"))
+				if (genericCoursetype.equals("ECA") && (rgrOptionFlag == 1))
 				{
 					if (rgrOptionFlag == 1)
 					{					

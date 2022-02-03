@@ -19,7 +19,7 @@ public class CourseRegistrationStartController
 	@Autowired private CourseRegistrationCommonFunction courseRegCommonFn;
 	@Autowired private RegistrationLogService registrationLogService;
 
-	private static final String RegErrorMethod = "WS2122REG";
+	private static final String RegErrorMethod = "WSECAREG-2122";
 	
 		
 	@PostMapping("checkRegistration")

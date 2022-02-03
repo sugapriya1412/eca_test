@@ -54,7 +54,7 @@ public class CourseRegistrationPageController
 	@Autowired private SemesterMasterService semesterMasterService;
 	
 	private static final Logger logger = LogManager.getLogger(CourseRegistrationPageController.class);
-	private static final String RegErrorMethod = "WS2122REG";
+	private static final String RegErrorMethod = "WSECAREG-2122";
 	
 
 	@RequestMapping(value = "SessionTimedOut", method = { RequestMethod.POST, RequestMethod.GET })
