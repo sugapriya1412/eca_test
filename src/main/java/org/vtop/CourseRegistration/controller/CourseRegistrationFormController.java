@@ -49,10 +49,10 @@ public class CourseRegistrationFormController
 	@Autowired private SemesterMasterService semesterMasterService;
 	
 	private static final Logger logger = LogManager.getLogger(CourseRegistrationFormController.class);	
-	private static final String[] classType = { "BFS" };
+	private static final String[] classType = { "EFS" };
 	private static final String RegErrorMethod = "WSECAREG-2122";
 	
-	private static final String CAMPUSCODE = "VLR";	
+	private static final String CAMPUSCODE = "CHN";	
 	private static final int BUTTONS_TO_SHOW = 5;
 	private static final int INITIAL_PAGE = 0;
 	private static final int INITIAL_PAGE_SIZE = 5;
@@ -979,7 +979,7 @@ public class CourseRegistrationFormController
 									if((projectDuration != null) && (!projectDuration.equals("")) 
 											&& projectDuration.equals("12"))
 									{
-										RsemesterSubId = "VL20202105";
+										RsemesterSubId = "CH2022231";
 									}
 									
 									break;
@@ -990,7 +990,7 @@ public class CourseRegistrationFormController
 							
 							pRegStatus = courseRegistrationService.courseRegistrationAdd2(semesterSubId, classId, registerNumber, 
 												courseId, courseType, courseOption, regStatus, 0, registerNumber, IpAddress, 
-												"GEN", subCourseOption, "INSERT", "", "");
+												"GEN", subCourseOption, "INSERT", "", "", "");
 							if (pRegStatus.equals("SUCCESS"))
 							{
 								msg = "Selected Project Course Successfully Registered";
@@ -1131,7 +1131,7 @@ public class CourseRegistrationFormController
 	
 	
 	@PostMapping(value = "processRegisterCourse")
-	public String processRegisterCourse(String ClassID, String courseId, String courseType, String courseCode, 
+	public String processRegisterCourse(String ClassID, String courseId, String courseType, String courseCode,String courseCategory, 
 							String courseOption, String clashSlot, String epjSlotFlag, 
 							@RequestParam(value = "pageSize", required = false) Integer pageSize, 
 							@RequestParam(value = "page", required = false) Integer page,
@@ -1142,6 +1142,8 @@ public class CourseRegistrationFormController
 							@RequestParam(value = "subCourseDate", required = false) String subCourseDate,
 							Model model, String[] clArr, HttpSession session, HttpServletRequest request) 
 	{
+		System.out.println("coursecategory1111"+courseCategory);
+		System.out.println("searchType"+searchType);
 		String registerNumber = (String) session.getAttribute("RegisterNumber");
 		String registrationOption = (String) session.getAttribute("registrationOption");
 		String IpAddress = (String) session.getAttribute("IpAddress");
@@ -1149,7 +1151,7 @@ public class CourseRegistrationFormController
 		Integer approvalStatus = (Integer) session.getAttribute("approvalStatus");
 		List<String> courseRegWaitingList = new ArrayList<String>();
 		String msg = null, classId1 = "", classId2 = "", classId3 = "", classId = "", infoMsg = "", urlPage = "";
-		String labErpId = "", labAssoId = "", genericCourseType = "", evaluationType = "";
+		String labErpId = "", labAssoId = "", genericCourseType = "", evaluationType = "", gradeCategory = "";
 		String[] courseTypels = {}, classNbr = {}, regStatusArr = {};		
 		String thyErpId = "", thyAssoId="", seatRegClassNbr = "", message = null;
 		String pClassIdArr = "", pCompTypeArr = "", pRegStatus = "", pSubCrTypeArr = "";
@@ -1201,7 +1203,7 @@ public class CourseRegistrationFormController
 				Integer reRegFlag =  (Integer) session.getAttribute("reRegFlag");
 				String registrationMethod = (String) session.getAttribute("registrationMethod");
 				Float curriculumVersion = (Float) session.getAttribute("curriculumVersion");
-				
+			
 				Date startDate = (Date) session.getAttribute("startDate");
 				Date endDate = (Date) session.getAttribute("endDate");
 				String startTime = (String) session.getAttribute("startTime");
@@ -1222,8 +1224,11 @@ public class CourseRegistrationFormController
 				
 				int compulsoryStatus = 2;
 				List<String> courseTypeArr = semesterMasterService.getCourseTypeComponentByGenericType(genericCourseType);
-				//System.out.println("subCourseOption: "+ subCourseOption +" | subCourseType: "+ subCourseType 
-				//						+" | subCourseDate: "+ subCourseDate +" | allowStatus: "+ allowStatus);
+				
+				System.out.println("CourseOptionYYY"+courseOption);
+				System.out.println("subCourseOption: "+ subCourseOption +" | subCourseTypexxxxx: "+ subCourseType 
+										+" | subCourseDate: "+ subCourseDate +" | allowStatus: "+ allowStatus);
+				
 				
 				switch (allowStatus)
 				{
@@ -1248,6 +1253,7 @@ public class CourseRegistrationFormController
 									courseTypels = ClassID.split(",");
 									classNbr = courseTypels[0].split("/");									
 									classId1 = classNbr[1];
+									
 									break;
 							}							
 						}						
@@ -1263,6 +1269,7 @@ public class CourseRegistrationFormController
 								{
 									case "ELA":
 										courseAllocationModel = courseAllocationService.getOne(classId2);
+										
 										if (courseAllocationModel != null)
 										{
 											labErpId = courseAllocationModel.getErpId();
@@ -1292,19 +1299,27 @@ public class CourseRegistrationFormController
 												
 									default:
 										courseAllocationModel = courseAllocationService.getOne(classId1);
+										
 										if (courseAllocationModel != null)
 										{
+											System.out.println("courseLis333333333t");
 											thyErpId = courseAllocationModel.getErpId();
 											thySlotId = courseAllocationModel.getSlotId();
 											thyAssoId = courseAllocationModel.getAssoClassId();	
 											patternId = courseAllocationModel.getTimeTableModel().getPatternId();
+											System.out.println("thyErpId"+thyErpId);
+											System.out.println("thySlotId"+thySlotId);
+											System.out.println("thyAssoId"+thyAssoId);
+											System.out.println("patternId"+patternId);
+											
 										}
-													
+										
 										switch(genericCourseType)
 										{
 											case "ETP": 
 												if (courseList.equals("ETH"))
 												{
+													System.out.println("12121courseList");
 													courseAllocationModel2 = courseAllocationService.getCourseAllocationCourseIdTypeEmpidSlotAssoList(semesterSubId,
 																					classGroupId, classType, courseId, "EPJ", thyErpId, thySlotId, thyAssoId, 
 																					ProgramGroupCode, ProgramSpecCode, costCentreCode);
@@ -1323,14 +1338,16 @@ public class CourseRegistrationFormController
 										break;
 								}									
 							}
-															
-							if ((!courseList.equals("EPJ")) && (!courseList.equals("PJT")) 
+							System.out.println("courseList121212");								
+						/*	if ((!courseList.equals("EPJ")) && (!courseList.equals("PJT")) 
 									&& (!courseAllocationModel.getTimeTableModel().getClashSlot().equals("NONE")))
 							{
+								System.out.println("courseList121212raj");	
 								clashslot.add(courseAllocationModel.getTimeTableModel().getClashSlot());
-							}								
+							}*/	
+							System.out.println("888courseList121212raj");	
 						}
-							
+						System.out.println("8999988courseList121212raj");		
 						//Get the Registration Status
 						/*switch(courseOption)
 						{
@@ -1344,12 +1361,13 @@ public class CourseRegistrationFormController
 								regStatus = 1;
 							break;
 						}*/
+						System.out.println("courseList");
 						regStatus = courseRegCommonFn.getRegistrationStatus(approvalStatus, courseOption, 
 											genericCourseType, evaluationType, studentCategory);
 						
 						regStatusArr = courseRegCommonFn.checkClash(patternId, clashslot, semesterSubId, registerNumber, "ADD", "").split("/");
 						regStatusFlag = Integer.parseInt(regStatusArr[0]);
-						//System.out.println("regStatusFlag: " + regStatusFlag + " | Message: " + regStatusArr[1]);
+						System.out.println("regStatusFlag: " + regStatusFlag + " | Message: " + regStatusArr[1]);
 													
 						if (regStatusFlag == 2)
 						{
@@ -1438,7 +1456,7 @@ public class CourseRegistrationFormController
 									
 									regTypeCount = regTypeCount + 1;										
 								}
-								
+									
 								if ((!subCourseOption.equals("")) && (!subCourseOption.equals(null)))
 								{
 									if (genericCourseType.equals("ECA") && courseOption.equals("CS"))
@@ -1512,24 +1530,30 @@ public class CourseRegistrationFormController
 									regCompType = 1;
 								}
 								
-								//System.out.println("semesterSubId: "+ semesterSubId +" | pClassIdArr: "+ pClassIdArr 
-								//		+" | registerNumber: "+ registerNumber +" | courseId: "+ courseId 
-								//		+" | pCompTypeArr: "+ pCompTypeArr +" | courseOption: "+ courseOption 
-								//		+" | regStatus: "+ regStatus +" | regCompType: "+ regCompType 
-								//		+" | registerNumber: "+ registerNumber +" | IpAddress: "+ IpAddress 
-								//		+" | subCourseOption: "+ subCourseOption +" | pSubCrTypeArr: "+ pSubCrTypeArr 
-								//		+" | subCourseDate: "+ subCourseDate);
-								
+								System.out.println("semesterSubId: "+ semesterSubId +" | pClassIdArr: "+ pClassIdArr 
+									+" | registerNumber: "+ registerNumber +" | courseId: "+ courseId 
+										+" | pCompTypeArr: "+ pCompTypeArr +" | courseOption: "+ courseOption 
+										+" | regStatus: "+ regStatus +" | regCompType: "+ regCompType 
+										+" | registerNumber: "+ registerNumber +" | IpAddress: "+ IpAddress 
+										+" | subCourseOption: "+ subCourseOption +" | pSubCrTypeArr: "+ pSubCrTypeArr 
+									+" | subCourseDate: "+ subCourseDate);
+								System.out.println("studyStartYear"+studyStartYear);
+								System.out.println("courseCategory"+courseCategory);
+								System.out.println("genericCourseType"+genericCourseType);
+								System.out.println("ProgramGroupCode"+ProgramGroupCode);
+								gradeCategory = courseRegistrationService.getGradeCategory(studyStartYear, courseCategory, genericCourseType, ProgramGroupCode);
 								pRegStatus = courseRegistrationService.courseRegistrationAdd2(semesterSubId, pClassIdArr, 
 												registerNumber, courseId, pCompTypeArr, courseOption, regStatus, regCompType, 
 												registerNumber, IpAddress, "GEN", subCourseOption, "INSERT", pSubCrTypeArr, 
-												subCourseDate);
+												subCourseDate,gradeCategory);
+								System.out.println("hai");
 								if (pRegStatus.equals("SUCCESS"))
 								{
 									msg = "Selected Course Successfully Registered";
 								}
 								else if ((pRegStatus.equals("FAIL")) || (pRegStatus.substring(0, 5).equals("error")))
 								{
+									System.out.println("hai11"+pRegStatus);
 									message = "Technical error.";
 									registrationLogService.addErrorLog(pRegStatus.toString()+"<-CODE->"+courseId, RegErrorMethod+"CourseRegistrationFormController", 
 											"processRegisterCourseInsertPROC", registerNumber, IpAddress);
@@ -2492,7 +2516,7 @@ public class CourseRegistrationFormController
 								
 								pRegStatus = courseRegistrationService.courseRegistrationAdd2(semesterSubId, pClassIdArr, 
 												registerNumber, courseId, pCompTypeArr, courseOption, regStatus, regCompType, 
-												registerNumber, IpAddress, "WL", subCourseOption, "INSERT", pSubCrTypeArr, subCourseDate);
+												registerNumber, IpAddress, "WL", subCourseOption, "INSERT", pSubCrTypeArr, subCourseDate, "");
 								if (pRegStatus.equals("SUCCESS"))
 								{
 									msg = "Selected course successfully registered under waiting list";

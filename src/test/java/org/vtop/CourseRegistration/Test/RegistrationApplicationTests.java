@@ -39,10 +39,10 @@ public class RegistrationApplicationTests {
 	@Autowired private EmployeeProfileService employeeProfileService;
 	
 	
-	private static final String[] classType = { "BFS" };
+	private static final String[] classType = { "EFS" };
 	private static final String RegErrorMethod = "SS1201819REG";
 	
-	private static final String CAMPUSCODE = "VLR";	
+	private static final String CAMPUSCODE = "CHN";	
 	//private static final int BUTTONS_TO_SHOW = 5;
 	//private static final int INITIAL_PAGE = 0;
 	//private static final int INITIAL_PAGE_SIZE = 5;
@@ -203,7 +203,7 @@ public class RegistrationApplicationTests {
 	{		
 		String courseId = "VL_MAT3004_00110";
 		String IpAddress = "10.10.95.16";
-		String semesterSubId = "VL2018198";
+		String semesterSubId = "CH2022231";
 		String registerNumber = "15BBT0234";
 		
 		String urlPage = "", courseTypeDisplay = "", msg = null, message = null, 

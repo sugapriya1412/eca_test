@@ -35,7 +35,7 @@ public class CourseRegistrationEditController
 	@Autowired private ProgrammeSpecializationCurriculumDetailService programmeSpecializationCurriculumDetailService;
 	@Autowired private CourseRegistrationFormController courseRegistrationFormController;
 	
-	private static final String[] classType = { "BFS" };
+	private static final String[] classType = { "EFS" };
 	private static final String RegErrorMethod = "WS2122REG";
 	
 

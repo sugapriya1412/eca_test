@@ -140,11 +140,11 @@ public interface CourseRegistrationRepository extends JpaRepository<CourseRegist
 				String ploguserid, String plogipaddress, String pregtype, String pold_course_code, 
 				String pcalltype, String pold_course_type, String pold_exam_month);*/
 	@Query(value="call academics.registration_insert_prc (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, "+
-					"?13, ?14, ?15, ?16)", nativeQuery=true)
+					"?13, ?14, ?15, ?16, ?17)", nativeQuery=true)
 	String registration_insert_prc(String psemsubid, String pclassid, String pregno, String pcourseid, 
 				String pcomponent_type, String pcourse_option, Integer pregstatus, Integer pregcomponent_type, 
 				String ploguserid, String plogipaddress, String pregtype, String pold_course_code, 
-				String pcalltype, String pold_course_type, String pold_exam_month, String returnValue);
+				String pcalltype, String pold_course_type, String pold_exam_month,String gradecategory, String returnValue);
 	
 	
 	//For Update

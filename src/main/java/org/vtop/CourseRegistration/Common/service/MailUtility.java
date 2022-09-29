@@ -17,15 +17,15 @@ public class MailUtility
 {
 	public static String triggerMail(String subject, String body, String attachementFilePath, String to)
 	{
-		String FromEmailID = "noreply.sdc@vit.ac.in";
-		String FromEmailPass = "xM*$HZ87y7@^(5LS#.U*AgS";			
+		String FromEmailID = "XXXX";
+		String FromEmailPass = "XXXX";			
  
 		Properties props = new Properties();		 
 		//props.put("mail.smtp.host", "10.10.4.55");
-		props.put("mail.smtp.host", "smtp.vit.ac.in");
-		props.put("mail.smtp.port", "25"); 		  
-		props.put("mail.smtp.auth", "true");		 
-		props.put("mail.smtp.ssl.trust", "*");
+		props.put("mail.smtp.host", "XXXX");
+		props.put("mail.smtp.port", "XXXX"); 		  
+		props.put("mail.smtp.auth", "XXXX");		 
+		props.put("mail.smtp.ssl.trust", "XXXX");
 		
 		
 		Session session = Session.getInstance(props,

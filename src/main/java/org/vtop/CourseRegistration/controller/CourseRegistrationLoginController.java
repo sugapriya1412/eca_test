@@ -35,7 +35,7 @@ public class CourseRegistrationLoginController
 	@Autowired private SemesterMasterService semesterMasterService;
 	@Autowired private ProgrammeSpecializationCurriculumDetailService programmeSpecializationCurriculumDetailService;
 		
-	//private static final String CAMPUSCODE = "VLR";
+	//private static final String CAMPUSCODE = "CHN";
 	private static final String RegErrorMethod = "WSECAREG-2122";
 	
 	
@@ -45,10 +45,10 @@ public class CourseRegistrationLoginController
 						HttpServletResponse response) throws ServletException, IOException, 
 						ParseException 
 	{	
-		int testStatus = 1; //Login with Password & Captcha-> 1: Enable/ 2: Disable
+		int testStatus = 2; //Login with Password & Captcha-> 1: Enable/ 2: Disable
 		int regSlotCheckStatus = 2; //If Permitted Schedule-> 1: Date & Time / 2: Only Date
 		int regTimeCheckStatus = 1; //Time-> 1: Open Hours/ 2: Permitted Schedule
-		int historyCallStatus = 1; //Student History-> 1: Procedure/ 2: Table
+		int historyCallStatus = 2; //Student History-> 1: Procedure/ 2: Table
 		int cgpaStatus = 1; //Student CGPA & Credit Detail-> 1: Dynamic/ 2: Static
 		
 		int PEUEAllowStatus = 1; //PE & UE Category Allow Status-> 1: Enable/ 2: Disable
@@ -56,7 +56,7 @@ public class CourseRegistrationLoginController
 		int waitingListStatus = 2; //Waiting List Allow Status-> 1: Enable/ 2: Disable
 		int OptionNAStatus = 1; //Option Not Allowed Status-> 1: Enable/ 2: Disable
 		int compulsoryCourseStatus = 2; //Compulsory Course Allow Status-> 1: Enable/ 2: Disable
-		int otpStatus = 1; //OTP Send Status-> 1: Enable/ 2: Disable
+		int otpStatus = 2; //OTP Send Status-> 1: Enable/ 2: Disable
 		
 		int maxCredit = 27, minCredit = 16, studyStartYear = 0, studentSemester = 0;	
 		int studentGraduateYear = 0, academicYear = 0, academicGraduateYear = 0, cclTotalCredit = 0;				
@@ -78,7 +78,7 @@ public class CourseRegistrationLoginController
 				
 		SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy");		
 		Date startDate = format.parse("02-FEB-2022");
-		Date endDate = format.parse("06-FEB-2022");
+		Date endDate = format.parse("09-OCT-2022");
 		String startTime = "10:00:00", endTime = "23:59:59", allowStartTime = "10:00:00";
 		
 		String[] statusMsg = new String[]{};
@@ -226,13 +226,13 @@ public class CourseRegistrationLoginController
 						break;
 					}
 					
-					/*System.out.println("registerNo: "+ registerNo +" | studentName: "+ studentName 
+					System.out.println("registerNo: "+ registerNo +" | studentName: "+ studentName 
 							+" | specId: "+ specId +" | specCode: "+ specCode +" | specDesc: "+ specDesc 
 							+" | groupId: "+ groupId +" | programGroupCode: "+ programGroupCode 
 							+" | programGroupMode: "+ programGroupMode +" | programDuration: "+ programDuration 
 							+" | costCentreCode: "+ costCentreCode +" | studyStartYear: "+ studyStartYear 
 							+" | studentStudySystem: "+ studentStudySystem +" | feeId: "+ feeId 
-							+" | studentGraduateYear: "+ studentGraduateYear +" | studEMailId: "+ studEMailId);*/
+							+" | studentGraduateYear: "+ studentGraduateYear +" | studEMailId: "+ studEMailId);
 																				
 					//Semester Sub Id Assignment
 					if (programGroupCode.equals("MBA") || programGroupCode.equals("MBA5")) 
@@ -245,7 +245,7 @@ public class CourseRegistrationLoginController
 					}
 					else
 					{
-						semesterSubId = "VL20212205";						
+						semesterSubId = "CH2022231";						
 					}
 					//System.out.println("semesterSubId: "+ semesterSubId);
 
@@ -414,13 +414,33 @@ public class CourseRegistrationLoginController
 						msg = programGroupCode +" - "+ specDesc +" students are not allowed for Registration.";
 					}
 				}
-				else if ((studyStartYear >= 2019) && (studyStartYear < academicYear))
+				else if ((studyStartYear <= 2020) && (studyStartYear < academicYear))
 				{
-					if (programGroupCode.equals("BTECH") || programGroupCode.equals("BBA") 
+					System.out.println("studyStartYear"+studyStartYear);
+					System.out.println("academicYear"+academicYear);
+					if (programGroupCode.equals("BTECH") || programGroupCode.equals("BBA") || programGroupCode.equals("LAW") 
 							|| programGroupCode.equals("BCA") || programGroupCode.equals("BCOM") 
 							|| programGroupCode.equals("BSC") || programGroupCode.equals("BSC4")  
 							|| programGroupCode.equals("BDES") || programGroupCode.equals("BARCH")
 							|| programGroupCode.equals("MSC5") || programGroupCode.equals("MTECH5"))
+					{
+						checkFlag6 = 1;
+					}
+					else
+					{
+						msg = programGroupCode +" - "+ specDesc +" students are not allowed for Registration.";
+					}
+				}
+				
+				else if ((studyStartYear <= 2021))
+				{
+					System.out.println("studyStartYear"+studyStartYear);
+					System.out.println("academicYear"+academicYear);
+					if (programGroupCode.equals("BBA") || programGroupCode.equals("LAW") 
+							|| programGroupCode.equals("BBH") || programGroupCode.equals("BCOM") 
+							|| programGroupCode.equals("BSC") || programGroupCode.equals("BSC4")  
+							|| programGroupCode.equals("BDES") || programGroupCode.equals("BARCH")
+							|| programGroupCode.equals("MSC5") || (programGroupCode.equals("MTECH5") && (specCode.equals("MIS")|| specCode.equals("MIA"))))
 					{
 						checkFlag6 = 1;
 					}

@@ -169,11 +169,51 @@ public class CourseRegistrationService
 	public String courseRegistrationAdd2(String psemsubid, String pclassid, String pregno, String pcourseid, 
 						String pcomponent_type, String pcourse_option, Integer pregstatus, Integer pregcomponent_type, 
 						String ploguserid, String plogipaddress, String pregtype, String pold_course_code, String pcalltype, 
-						String pold_course_type, String pold_exam_month)
+						String pold_course_type, String pold_exam_month,String gradeCategory )
 	{
 		return courseRegistrationRepository.registration_insert_prc(psemsubid, pclassid, pregno, pcourseid, 
 					pcomponent_type, pcourse_option, pregstatus, pregcomponent_type, ploguserid, plogipaddress, 
-					pregtype, pold_course_code, pcalltype, pold_course_type, pold_exam_month, "NONE");
+					pregtype, pold_course_code, pcalltype, pold_course_type, pold_exam_month,gradeCategory, "NONE");
+	}
+	public String getGradeCategory(int admissionYear, String courseCategory, String genericCourseType, String programmeGroupCode)
+	{
+		String returnGradeCategory = "CG";
+		
+		if ((admissionYear == 2018) && programmeGroupCode.equals("BSC4"))
+		{
+			if (courseCategory.equals("NC"))
+			{
+				returnGradeCategory = "NCPF";
+			}
+			else if (courseCategory.equals("BC"))
+			{
+				returnGradeCategory = "NCG";
+			}	
+		}
+		else if ((admissionYear >= 2019) && (courseCategory.equals("NC") || courseCategory.equals("BC")))
+		{
+			if (genericCourseType.equals("ECA"))
+			{
+				returnGradeCategory = "NCPF";
+			}
+			else
+			{
+				returnGradeCategory = "NCG";
+			}	
+		}
+		else if ((admissionYear >= 2021) && (courseCategory.equals("NGCR") || courseCategory.equals("FCNG")))
+		{
+			if (genericCourseType.equals("PJT"))
+			{
+				returnGradeCategory = "NCPF";
+			}
+			else
+			{
+				returnGradeCategory = "NCG";
+			}	
+		}
+		
+		return returnGradeCategory;
 	}
 	
 	public String courseRegistrationUpdate2(String psemsubid, String pregno, String pcourseid, String pcomponent_type,

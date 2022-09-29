@@ -57,8 +57,8 @@ public class AcademicsDataConfig
 		HikariConfig dataSrcConfig = new HikariConfig();
 
         dataSrcConfig.setUsername("reguser");
-        dataSrcConfig.setPassword("H!ghC0nf!d9nc9");
-        dataSrcConfig.setJdbcUrl("jdbc:postgresql://10.10.3.236:5432/vtop");
+        dataSrcConfig.setPassword("reg#space*1");
+        dataSrcConfig.setJdbcUrl("jdbc:postgresql://172.16.1.59:5432/vtop");
         dataSrcConfig.setDriverClassName("org.postgresql.Driver");
         dataSrcConfig.setMinimumIdle(1);
         dataSrcConfig.setMaximumPoolSize(1);
@@ -79,7 +79,7 @@ public class AcademicsDataConfig
 	      FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
 	      RemoteAddrFilter filter = new RemoteAddrFilter();
 
-	      filter.setAllow("10.10.95.*");
+	      filter.setAllow("XXXX");
 	      filter.setDenyStatus(404);
 
 	      filterRegistrationBean.setFilter(filter);
